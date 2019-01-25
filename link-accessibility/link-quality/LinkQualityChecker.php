@@ -31,6 +31,7 @@ class LinkQualityChecker {
         CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_CUSTOMREQUEST => 'HEAD',
         CURLOPT_NOBODY => 1,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
       ));
     }
 
@@ -55,9 +56,6 @@ class LinkQualityChecker {
 
     $http_code = $curl_info["http_code"];
     $http_code_class = (int)($http_code/100);
-
-    show($url);
-    show($http_code);
 
     return array(
       'is_redirect'    => $http_code_class == 3,
