@@ -23,6 +23,7 @@ class LinkQualityChecker {
    *
    */
   public static function evaluate($url, $domain) {
+
     // init curl
     if (!isset(self::$curl)) {
       self::$curl = curl_init();
@@ -37,6 +38,12 @@ class LinkQualityChecker {
 
     $url = trim($url);
     $domain = trim($domain);
+
+    // trim the trailing '/' in domain if it's there
+    if ($domain[strlen($domain)-1] === '/') {
+      $domain = substr($domain, 0, -1);
+    }
+
     $is_same_domain = strpos($url, $domain) !== FALSE;
 
     if ($url[0] === '#' || substr($url, 0, 4) === 'tel:' || substr($url, 0, 7) === 'mailto:') {
