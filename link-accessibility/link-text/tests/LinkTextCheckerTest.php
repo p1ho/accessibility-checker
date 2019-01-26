@@ -24,7 +24,7 @@ final class LinkTextCheckerTest extends TestCase {
       $link_node = $dom->getElementsByTagName('a')[0];
       $this->assertEquals(
         $testcase->expected_output,
-        LinkTextChecker::evaluate($link_node),
+        LinkTextChecker::evaluate($link_node, "localhost"),
         print_r($testcase->input, TRUE) . 'did not pass all checks.'
       );
     }
@@ -37,7 +37,7 @@ final class LinkTextCheckerTest extends TestCase {
       $link_node = $dom->getElementsByTagName('a')[0];
       $this->assertEquals(
         $testcase->expected_output,
-        LinkTextChecker::evaluate($link_node),
+        LinkTextChecker::evaluate($link_node, "localhost"),
         print_r($testcase->input, TRUE) . 'did not fail.'
       );
     }

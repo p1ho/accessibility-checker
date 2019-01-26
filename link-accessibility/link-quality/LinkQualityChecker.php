@@ -1,12 +1,14 @@
 <?php
 
+require_once __DIR__ . '\..\..\vendor/stefangabos/zebra_curl/Zebra_cURL.php';
+
 /**
  * Link Quality Checker class for accessibility_checker
  */
 
 class LinkQualityChecker {
 
-  private static $curl;
+  private static $result;
 
   /**
    * Check if links (<a>) are optimized
@@ -23,30 +25,25 @@ class LinkQualityChecker {
    *
    */
   public static function evaluate($url, $domain) {
-
-    // init curl
-    if (!isset(self::$curl)) {
-      self::$curl = curl_init();
-      curl_setopt_array(self::$curl, array(
-        CURLOPT_HEADER => 1,
-        CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_CUSTOMREQUEST => 'HEAD',
-        CURLOPT_NOBODY => 1,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
-      ));
-    }
+    // reset curl result
+    self::$result = NULL;
 
     $url = trim($url);
     $domain = trim($domain);
 
-    // trim the trailing '/' in domain if it's there
-    if ($domain[strlen($domain)-1] === '/') {
-      $domain = substr($domain, 0, -1);
-    }
-
     $is_same_domain = strpos($url, $domain) !== FALSE;
 
-    if ($url[0] === '#' || substr($url, 0, 4) === 'tel:' || substr($url, 0, 7) === 'mailto:') {
+    /*
+    if url is empty, or starts with the following:
+    - #
+    - tel:
+    - mailto:
+    - ./ or .\
+    - ../ or ..\
+    if not, check if it's a relative path, if so, prepend domain to url
+     */
+    if (trim($url) === "" ||
+        preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\){1}/", $url)) {
       return array(
         'is_redirect'    => FALSE,
         'is_dead'        => FALSE,
@@ -57,12 +54,16 @@ class LinkQualityChecker {
       $is_same_domain = FALSE;
     }
 
-    curl_setopt(self::$curl, CURLOPT_URL, $url);
-    $curl_resp = curl_exec(self::$curl);
-    $curl_info = curl_getinfo(self::$curl);
-
-    $http_code = $curl_info["http_code"];
-    $http_code_class = (int)($http_code/100);
+    // make HEAD request to get Headers
+    $curl = new Zebra_cURL();
+    $curl->cache(__DIR__. '\..\..\cache/');
+    $curl->header($url, function ($result) { self::$result = $result; });
+    if (self::$result !== NULL) {
+      $http_code = self::$result->info["http_code"];
+      $http_code_class = (int)($http_code/100);
+    } else {
+      return FALSE;
+    }
 
     return array(
       'is_redirect'    => $http_code_class == 3,

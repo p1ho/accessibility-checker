@@ -18,25 +18,35 @@ class LinkAccessibilityChecker
   // Keeps track of errors
   private static $errors;
 
+  // cURL
+  private static $curl;
+
+  // sets how long cache will be saved
+  private static $cache_time = 86400;
+
   public static function evaluate($dom, $domain)
   {
     self::_init();
 
-    if (count($dom->getElementsByTagName('body')) > 0) {
-      $body = $dom->getElementsByTagName('body')[0];
-    } else {
-      $body = NULL;
+    // trim the trailing '/' in domain if it's there
+    if ($domain[strlen($domain)-1] === '/') {
+      $domain = substr($domain, 0, -1);
     }
 
-    $eval_array = array();
-    if ($body === NULL) {
-      $eval_array['passed']   = TRUE;
-      $eval_array['errors']   = array();
-    } else {
-      self::_eval_DOM($body, $domain);
-      $eval_array['passed']   = (count(self::$errors) === 0);
-      $eval_array['errors']   = self::$errors;
+    $link_nodes_obj = $dom->getElementsByTagName('a');
+    $link_nodes = array();
+    for ($i = 0; $i < $link_nodes_obj->length; $i++) {
+      $link_nodes[] = $link_nodes_obj[$i];
     }
+
+    // fetch header from all links and cache them using Zebra_cURL
+    self::_prefetch($link_nodes, $domain);
+
+    // create array to be returned
+    $eval_array = array();
+    self::_eval_links($link_nodes, $domain);
+    $eval_array['passed'] = count(self::$errors) === 0;
+    $eval_array['errors'] = self::$errors;
 
     return $eval_array;
   }
@@ -48,59 +58,122 @@ class LinkAccessibilityChecker
     self::$errors = array();
     require_once "link-quality/LinkQualityChecker.php";
     require_once "link-text/LinkTextChecker.php";
+    require_once __DIR__ . '\..\vendor/stefangabos/zebra_curl/Zebra_cURL.php';
+    self::$curl = new Zebra_cURL();
+    self::$curl->cache(__DIR__ . '\..\cache/', self::$cache_time);
+    self::$curl->threads = 50;
   }
 
   /**
-   * Recursive DOM Element parsing helper
-   * @param  DOMElement $dom_el
+   * _prefetch function.
+   * Prefetch all the URL so they are in cache.
+   *
+   * Note: './' and '../' is skipped because we don't have the absolute URL this
+   * path is accessed from.
+   *
+   * @param  Array  $link_nodes [list of DOMElement Object with that is <a>]
+   * @param  String $domain     [domain name (with transfer protocol defined)]
    * @return void
    */
-  private static function _eval_DOM($dom_el, $domain) {
-    if (get_class($dom_el) === 'DOMComment') {return;} // skip comments
-    $tag_name = $dom_el->tagName;
-    $url = $dom_el->getAttribute('href');
-    if ($tag_name === "a") {
-      $text_raw = self::_get_text_content($dom_el);
-      $text     = self::_get_trimmed_text($text_raw);
+  private static function _prefetch($link_nodes, $domain) {
+    $paths = array_map( function ($x) { return $x->getAttribute('href'); }, $link_nodes);
+    $filtered_paths = array();
+    foreach ($paths as $path) {
+      if (!preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\)/", $path)) {
+        if ($path[0] === '/') {
+          $filtered_paths[] = $domain . $path;
+        } else {
+          $filtered_paths[] = $path;
+        }
+      }
+    }
+    self::$curl->header($filtered_paths, function ($x) { return; });
+  }
+
+  /**
+   * Parses all the links
+   * @param  Array  $link_nodes [list of DOMElement Object with that is <a>]
+   * @param  String $domain     [domain name (with transfer protocol defined)]
+   * @return void
+   */
+  private static function _eval_links($link_nodes, $domain) {
+    foreach ($link_nodes as $link_node) {
+      $text = self::_get_text_content($link_node);
+      $path = $link_node->getAttribute('href');
 
       // check link-quality
-      $link_quality_eval = LinkQualityChecker::evaluate($url, $domain);
+      $link_quality_eval = LinkQualityChecker::evaluate($path, $domain);
       if ($link_quality_eval['is_redirect']) {
-        self::$errors[] = "Redirect Link: link with text '$text' is a redirect, use the final redirected link.";
+        self::$errors[] = (object) [
+          'type' => 'redirect',
+          'path' => $path,
+          'link_text' => $text,
+          'recommendation' => 'Use the final redirected link.',
+        ];
       }
       if ($link_quality_eval['is_dead']) {
-        self::$errors[] = "Dead Link: link with text '$text' no longer works.";
+        self::$errors[] = (object) [
+          'type' => 'dead',
+          'path' => $path,
+          'link_text' => $text,
+          'recommendation' => 'Find an alternative working link.',
+        ];
       }
       if ($link_quality_eval['is_same_domain']) {
-        self::$errors[] = "Same Domain: link with text '$text' links to somewhere in this website, use relative URL.";
+        self::$errors[] = (object) [
+          'type' => 'domain overlap',
+          'path' => $path,
+          'link_text' => $text,
+          'recommendation' => 'Use relative URL.',
+        ];
       }
 
       // check link-text accessibility
-      $link_text_eval = LinkTextChecker::evaluate($dom_el);
+      $link_text_eval = LinkTextChecker::evaluate($link_node, $domain);
       if (!$link_text_eval['passed_blacklist_words']) {
-        self::$errors[] = "Poor Link Name: link with text '$text' could be more descriptive";
+        self::$errors[] = (object) [
+          'type' => 'poor link text',
+          'path' => $path,
+          'link_text' => $text,
+          'recommendation' => 'Use more descriptive and specific wording.',
+        ];
       }
       if (!$link_text_eval['passed_text_not_url']) {
-        self::$errors[] = "URL Link: link with text '$text' is an URL link. URL is harder to read.";
+        self::$errors[] = (object) [
+          'type' => 'url link text',
+          'path' => $path,
+          'link_text' => $text,
+          'recommendation' => 'Use real words that describe the link.',
+        ];
       }
       if (!$link_text_eval['passed_text_length']) {
-        self::$errors[] = "Long Link Text: link with text '$text' is too long, please shorten it.";
+        self::$errors[] = (object) [
+          'type' => 'text too long',
+          'path' => $path,
+          'link_text' => $text,
+          'recommendation' => 'Shorten the link text.',
+        ];
       }
       if ($link_text_eval['url_is_pdf']) {
         if (!$link_text_eval['text_has_pdf']) {
-          self::$errors[] = "PDF Link: link with text '$text' is a PDF, please have the word 'PDF' in the link text.";
+          self::$errors[] = (object) [
+            'type' => 'unclear pdf link',
+            'path' => $path,
+            'link_text' => $text,
+            'recommendation' => 'Include the word "PDF" in the link',
+          ];
         }
       } else {
         if ($link_text_eval['url_is_download'] &&
             $link_text_eval['text_has_download']) {
-          self::$errors[] = "Download Link: link with text '$text' is a download link, please have the word 'download' in the link text'.";
+          self::$errors[] = (object) [
+            'type' => 'unclear download link',
+            'path' => $path,
+            'link_text' => $text,
+            'recommendation' => 'Include the word "download" in the link.',
+          ];
         }
       }
-    }
-
-    $child_elements = self::_get_childElements($dom_el);
-    foreach ($child_elements as $child_element) {
-      self::_eval_DOM($child_element, $domain);
     }
   }
 
@@ -138,42 +211,7 @@ class LinkAccessibilityChecker
         }
       }
     }
-    return $text;
+    return str_replace(array("\r", "\n"), '', $text);
   }
 
-  /**
-   * _get_trimmed_text description helper.
-   * If it's longer than 20 character long,
-   * it will only return the first 17 characters + '...'
-   *
-   * @param  String $raw_text
-   * @return string
-   */
-  private static function _get_trimmed_text($raw_text)
-  {
-    $text = str_replace(array("\r", "\n"), '', trim($raw_text));
-    if (strlen($text) > 20) {
-      return substr($text, 0, 17) . '...';
-    } else {
-      return $text;
-    }
-  }
-
-  /**
-   * _get_childElements helper. Because DOMElement->childNodes also returns
-   * DOMText which is not what we want, this helps with filtering those out.
-   * @param  DOMElement $dom_el
-   * @return array      [Array containing only DOMElement objects]
-   */
-  private static function _get_childElements($dom_el)
-  {
-    $child_nodes = $dom_el->childNodes;
-    $child_elements = array();
-    foreach ($child_nodes as $node) {
-      if (property_exists($node, 'tagName')) {
-        $child_elements[] = $node;
-      }
-    }
-    return $child_elements;
-  }
 }

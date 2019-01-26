@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '\..\..\vendor/stefangabos/zebra_curl/Zebra_cURL.php';
+
 /**
  * Link Text Checker class for checking link text accessibility
  *
@@ -73,7 +75,8 @@ class LinkTextChecker {
     "it" => 0,
   );
 
-  private static $curl;
+  // temp storage for curl request result
+  private static $result;
 
   /**
    * Takes in text from the link element and checks if it has anything that
@@ -101,18 +104,7 @@ class LinkTextChecker {
    *   "text_has_pdf"               => boolean
    * )
    */
-  public static function evaluate($link_node) {
-    // init curl
-    if (!isset(self::$curl)) {
-      self::$curl = curl_init();
-      curl_setopt_array(self::$curl, array(
-        CURLOPT_HEADER => 1,
-        CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_CUSTOMREQUEST => 'HEAD',
-        CURLOPT_NOBODY => 1,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
-      ));
-    }
+  public static function evaluate($link_node, $domain) {
 
     $link_text = $link_node->textContent;
     $link_url  = $link_node->getAttribute('href');
@@ -121,15 +113,18 @@ class LinkTextChecker {
       'passed_blacklist_words'    => self::_blacklist_words_passed($link_text),
       'passed_text_not_url'       => !self::_is_url($link_text),
       'passed_text_length'        => strlen($link_text) <= 100,
-      'url_is_download'           => self::_url_is_download($link_url),
+      'url_is_download'           => self::_url_is_download($link_url, $domain),
       'text_has_download'         => strpos(strtolower($link_text), 'download') !== FALSE,
-      'url_is_pdf'                => self::_url_is_pdf($link_url),
+      'url_is_pdf'                => self::_url_is_pdf($link_url, $domain),
       'text_has_pdf'              => strpos(strtolower($link_text), 'pdf') !== FALSE,
     );
 
     return $eval;
   }
 
+  /**
+   * Check if link text passes the blacklist filter
+   */
   private static function _blacklist_words_passed($text) {
     // preliminary check (not just blank space)
     $check = preg_match('%[a-z\d]+%iu', $text);
@@ -158,20 +153,47 @@ class LinkTextChecker {
     return $num_of_blacklist_words/$num_of_words < 2/3;
   }
 
+  /**
+   * Check if link text is url
+   */
   private static function _is_url($text) {
     $filter_result = filter_var($text, FILTER_VALIDATE_URL);
-    if ($filter_result !== FALSE) {
-      return TRUE;
+    return $filter_result !== FALSE;
+  }
+
+  /**
+   * Check if hyperlink leads to a download link
+   */
+  private static function _url_is_download($url, $domain) {
+    // reset curl result
+    self::$result = NULL;
+
+    /*
+    if url is empty, or starts with the following:
+    - #
+    - tel:
+    - mailto:
+    - ./ or .\
+    - ../ or ..\
+    if not, check if it's a relative path, if so, prepend domain to url
+     */
+    if (trim($url) === "" ||
+        preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\){1}/", $url)) {
+      return FALSE;
+    } else if ($url[0] === '/') {
+      $url = $domain . $url;
+    }
+
+    // make HEAD request to get Headers
+    $curl = new Zebra_cURL();
+    $curl->cache(__DIR__. '\..\..\cache/');
+    $curl->header($url, function ($result) { self::$result = $result; });
+    if (self::$result !== NULL) {
+      $curl_resp = self::$result->headers['responses'];
+      $curl_info = self::$result->info;
     } else {
       return FALSE;
     }
-  }
-
-  private static function _url_is_download($url) {
-    // make HEAD request to get Headers
-    curl_setopt(self::$curl, CURLOPT_URL, $url);
-    $curl_resp = curl_exec(self::$curl);
-    $curl_info = curl_getinfo(self::$curl);
 
     /*
     Check Content Disposition:
@@ -186,15 +208,10 @@ class LinkTextChecker {
 
     Else, return False
     */
-    $headers_array = explode(PHP_EOL, $curl_resp);
-    foreach ($headers_array as $header) {
-     if (strpos($header, 'Content-Description') === 0) {
-       $header_split = explode(': ', $header);
-       if (strpos($header_split[1], 'attachment') === 0) {
-         return TRUE;
-       }
-       break;
-     }
+    $headers_destination = $curl_resp[count($curl_resp)-1];
+    if (isset($headers_destination['Content-Disposition']) &&
+        strpos($headers_destination['Content-Disposition'], 'attachment') === 0) {
+      return TRUE;
     }
 
     // check MIME Type
@@ -215,16 +232,44 @@ class LinkTextChecker {
     }
   }
 
-  private static function _url_is_pdf($url) {
+  /**
+   * Check if hyperlink leads to a pdf link
+   */
+  private static function _url_is_pdf($url, $domain) {
+    // reset curl result
+    self::$result = NULL;
+
+    /*
+    if url is empty, or starts with the following:
+    - #
+    - tel:
+    - mailto:
+    - ./ or .\
+    - ../ or ..\
+    if not, check if it's a relative path, if so, prepend domain to url
+     */
+    if (trim($url) === "" ||
+        preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\){1}/", $url)) {
+      return FALSE;
+    } else if ($url[0] === '/') {
+      $url = $domain . $url;
+    }
+
     // if $url ends with .pdf
     if (substr(trim($url), -strlen('.pdf')) === '.pdf') {
       return TRUE;
     }
 
     // make HEAD request to get Headers
-    curl_setopt(self::$curl, CURLOPT_URL, $url);
-    $curl_resp = curl_exec(self::$curl);
-    $curl_info = curl_getinfo(self::$curl);
+    $curl = new Zebra_cURL();
+    $curl->cache(__DIR__. '\..\..\cache/');
+    $curl->header($url, function ($result) { self::$result = $result; });
+    if (self::$result !== NULL) {
+      $curl_resp = self::$result->headers['responses'];
+      $curl_info = self::$result->info;
+    } else {
+      return FALSE;
+    }
 
     // check MIME Type
     return isset($curl_info['content_type']) &&
