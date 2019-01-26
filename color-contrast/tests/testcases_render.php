@@ -61,7 +61,7 @@
       echo '<p class="fail"><strong>Should Fail:</strong></p>';
       echo '<ul>';
       foreach ($testcase->expected_output['errors'] as $error) {
-        echo '<li>'.htmlspecialchars($error).'</li>';
+        echo '<li>'.htmlspecialchars(print_r($error, TRUE)).'</li>';
       }
       echo '</ul>';
       echo '</div>';

@@ -16,7 +16,14 @@ $testcases_basic_html_fail = array(
     <p style="color: white;">white text</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <p> with text 'white text'. (contrast ratio: 1.00)"
+        (object) [
+          'type' => 'low contrast',
+          'mode' => 'AA',
+          'tag' => 'p',
+          'text' => 'white text',
+          'text_is_large' => FALSE,
+          'contrast_ratio' => 1.00,
+        ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -26,7 +33,14 @@ $testcases_basic_html_fail = array(
     <p style="background-color:black">black background</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <p> with text 'black background'. (contrast ratio: 1.00)"
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'black background',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -39,8 +53,22 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text '<p>...</p>'. (contrast ratio: 1.00)",
-      "Low Contrast(AA): <p> with text 'black container'. (contrast ratio: 1.00)"
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => '<p>...</p>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'black container',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -50,7 +78,14 @@ $testcases_basic_html_fail = array(
     <p style="color:white">white text</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <p> with text 'white text'. (contrast ratio: 1.00)"
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'white text',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -60,7 +95,14 @@ $testcases_basic_html_fail = array(
     <p style="color:yellow">yellow text</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <p> with text 'yellow text'. (contrast ratio: 1.07)"
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'yellow text',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.07,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -70,7 +112,14 @@ $testcases_basic_html_fail = array(
     <p style="color: yellow;">outside mark<mark>in mark</mark></p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <p> with text 'outside mark<mark...'. (contrast ratio: 1.07)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'outside mark<mark>...</mark>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.07,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -80,7 +129,14 @@ $testcases_basic_html_fail = array(
     <p><mark style="background-color: black;">in mark</mark></p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <mark> with text 'in mark'. (contrast ratio: 1.00)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'mark',
+        'text' => 'in mark',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -90,7 +146,14 @@ $testcases_basic_html_fail = array(
     <mark><span style="color: yellow;">yellow text</span></mark>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <span> with text 'yellow text'. (contrast ratio: 1.00)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'span',
+        'text' => 'yellow text',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -100,7 +163,14 @@ $testcases_basic_html_fail = array(
     <a href="" style="background-color: blue;">link</a>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <a> with text 'link'. (contrast ratio: 1.00)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'a',
+        'text' => 'link',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -110,7 +180,14 @@ $testcases_basic_html_fail = array(
     <a style="color: white;">link</a>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <a> with text 'link'. (contrast ratio: 1.00)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'a',
+        'text' => 'link',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -120,7 +197,14 @@ $testcases_basic_html_fail = array(
     <p style="color: rgba(0, 0, 0, 0);">transparent text</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <p> with text 'transparent text'. (contrast ratio: 1.00)"
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'transparent text',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -130,7 +214,14 @@ $testcases_basic_html_fail = array(
     <p style="background-color: rgba(0, 0, 0, .8);">transparent background</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <p> with text 'transparent backg...'. (contrast ratio: 1.66)"
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'transparent background',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.66,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -140,7 +231,14 @@ $testcases_basic_html_fail = array(
     <mark><span style="background-color: rgba(0, 0, 0, .7);">transparent background</span></mark>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <span> with text 'transparent backg...'. (contrast ratio: 2.38)"
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'span',
+        'text' => 'transparent background',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 2.38,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -161,9 +259,30 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text 'second level<div>...'. (contrast ratio: 2.61)",
-      "Low Contrast(AA): <div> with text 'third level<div>....'. (contrast ratio: 1.75)",
-      "Low Contrast(AA): <div> with text 'fourth level'. (contrast ratio: 1.26)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'second level<div>...</div>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 2.61,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'third level<div>...</div>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.75,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'fourth level',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.26,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -181,8 +300,22 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text 'inherited color<d...'. (contrast ratio: 2.61)",
-      "Low Contrast(AA): <div> with text 'same as parent'. (contrast ratio: 2.61)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'inherited color<div>...</div>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 2.61,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'same as parent',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 2.61,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -203,10 +336,38 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text 'first level<div>....'. (contrast ratio: 2.62)",
-      "Low Contrast(AA): <div> with text 'second level<div>...'. (contrast ratio: 1.75)",
-      "Low Contrast(AA): <div> with text 'third level<div>....'. (contrast ratio: 1.39)",
-      "Low Contrast(AA): <div> with text 'fourth level'. (contrast ratio: 1.09)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'first level<div>...</div>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 2.62,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'second level<div>...</div>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.75,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'third level<div>...</div>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.39,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => 'fourth level',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.09,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -225,10 +386,38 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text '<h1>...</h1><p>.....'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <p> with text 'small<b>...</b><s...'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <p> with text 'not large text 1'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <p> with text 'not large text 2'. (contrast ratio: 4.12)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => '<h1>...</h1><p>...</p><p>...</p><p>...</p><p>...</p>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'small<b>...</b><strong>...</strong>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'not large text 1',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'not large text 2',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -245,10 +434,38 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text '<h1>...</h1><h2>....'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <h4> with text 'h4'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <h5> with text 'h5'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <h6> with text 'h6'. (contrast ratio: 4.12)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => '<h1>...</h1><h2>...</h2><h3>...</h3><h4>...</h4><h5>...</h5><h6>...</h6>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'h4',
+        'text' => 'h4',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'h5',
+        'text' => 'h5',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'h6',
+        'text' => 'h6',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -273,9 +490,30 @@ $testcases_basic_html_fail = array(
     </section>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <h1> with text 'h1 level 4'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <h1> with text 'h1 level 5'. (contrast ratio: 4.12)",
-      "Low Contrast(AA): <h1> with text 'h1 level 6'. (contrast ratio: 4.12)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'h1',
+        'text' => 'h1 level 4',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'h1',
+        'text' => 'h1 level 5',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'h1',
+        'text' => 'h1 level 6',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 4.12,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -287,8 +525,22 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text '<h1>...</h1>'. (contrast ratio: 1.00)",
-      "Low Contrast(AA): <h1> with large text 'h1'. (contrast ratio: 1.00)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => '<h1>...</h1>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'h1',
+        'text' => 'h1',
+        'text_is_large' => TRUE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -300,7 +552,14 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "Low Contrast(AA): <div> with text '<h1>...</h1>'. (contrast ratio: 1.00)",
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'div',
+        'text' => '<h1>...</h1>',
+        'text_is_large' => FALSE,
+        'contrast_ratio' => 1.00,
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -310,8 +569,18 @@ $testcases_basic_html_fail = array(
     <p style="background-color: reddd; color:reddd">invalid colors</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Invalid Color: background color from <p> with text 'invalid colors'.",
-      "Invalid Color: font color from <p> with text 'invalid colors'.",
+      (object) [
+        'type' => 'invalid color',
+        'property' => 'background-color',
+        'tag' => 'p',
+        'text' => 'invalid colors',
+      ],
+      (object) [
+        'type' => 'invalid color',
+        'property' => 'color',
+        'tag' => 'p',
+        'text' => 'invalid colors',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -322,8 +591,18 @@ $testcases_basic_html_fail = array(
     <p style="font-size: -12px">invalid font-size 2</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Invalid Font-size: <p> with text 'invalid font-size 1'.",
-      "Invalid Font-size: <p> with text 'invalid font-size 2'.",
+      (object) [
+        'type' => 'invalid size',
+        'property' => 'font-size',
+        'tag' => 'p',
+        'text' => 'invalid font-size 1',
+      ],
+      (object) [
+        'type' => 'invalid size',
+        'property' => 'font-size',
+        'tag' => 'p',
+        'text' => 'invalid font-size 2',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -337,9 +616,24 @@ $testcases_basic_html_fail = array(
     <p style="font-weight: 700">valid font-weight 2</p>
     ',
     array('passed'=>False,'errors'=>array(
-      "Invalid Font-weight: <p> with text 'invalid font-weig...'.",
-      "Invalid Font-weight: <p> with text 'invalid font-weig...'.",
-      "Invalid Font-weight: <p> with text 'invalid font-weig...'.",
+      (object) [
+        'type' => 'invalid weight',
+        'property' => 'font-weight',
+        'tag' => 'p',
+        'text' => 'invalid font-weight 1',
+      ],
+      (object) [
+        'type' => 'invalid weight',
+        'property' => 'font-weight',
+        'tag' => 'p',
+        'text' => 'invalid font-weight 2',
+      ],
+      (object) [
+        'type' => 'invalid weight',
+        'property' => 'font-weight',
+        'tag' => 'p',
+        'text' => 'invalid font-weight 3',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------

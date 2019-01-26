@@ -104,6 +104,7 @@ class ColorContrastChecker
     }
 
     $eval_array = array();
+
     if ($body === NULL) {
       $eval_array['passed'] = TRUE;
       $eval_array['errors'] = array();
@@ -124,6 +125,7 @@ class ColorContrastChecker
       $eval_array['passed'] = (count(self::$errors) === 0);
       $eval_array['errors'] = self::$errors;
     }
+
     return $eval_array;
   }
 
@@ -172,8 +174,7 @@ class ColorContrastChecker
     // skip <style>/<script>/<br>
     if (in_array($tag_name, array('style', 'script', 'br'))) {return;}
 
-    $text_raw = self::_get_text_content($dom_el);
-    $text     = self::_get_trimmed_text($text_raw);
+    $text = self::_get_text_content($dom_el);
 
     $root_size         = 12; // assumes root font size is 12 pt to begin with
     $parent_bg_color   = $bg_color;
@@ -266,7 +267,12 @@ class ColorContrastChecker
         if ($style_properties['background-color'] !== "invalid") {
           $bg_color = $style_properties['background-color'];
         } else {
-          self::$errors[] = "Invalid Color: background color from <$tag_name> with text '$text'.";
+          self::$errors[] = (object) [
+            'type' => 'invalid color',
+            'property' => 'background-color',
+            'tag' => $tag_name,
+            'text' => $text,
+          ];
         }
       }
 
@@ -274,7 +280,12 @@ class ColorContrastChecker
         if ($style_properties['color'] !== "invalid") {
           $font_color = $style_properties['color'];
         } else {
-          self::$errors[] = "Invalid Color: font color from <$tag_name> with text '$text'.";
+          self::$errors[] = (object) [
+            'type' => 'invalid color',
+            'property' => 'color',
+            'tag' => $tag_name,
+            'text' => $text,
+          ];
         }
       }
 
@@ -282,7 +293,12 @@ class ColorContrastChecker
         if ($style_properties['font-size'] !== "invalid") {
           $font_size = $style_properties['font-size'];
         } else {
-          self::$errors[] = "Invalid Font-size: <$tag_name> with text '$text'.";
+          self::$errors[] = (object) [
+            'type' => 'invalid size',
+            'property' => 'font-size',
+            'tag' => $tag_name,
+            'text' => $text,
+          ];
         }
       }
 
@@ -290,7 +306,12 @@ class ColorContrastChecker
         if ($style_properties['font_is_bold'] !== "invalid") {
           $font_is_bold = $style_properties['font_is_bold'];
         } else {
-          self::$errors[] = "Invalid Font-weight: <$tag_name> with text '$text'.";
+          self::$errors[] = (object) [
+            'type' => 'invalid weight',
+            'property' => 'font-weight',
+            'tag' => $tag_name,
+            'text' => $text,
+          ];
         }
       }
 
@@ -323,25 +344,49 @@ class ColorContrastChecker
     if (self::$mode === 'AA') {
       if ($font_is_large) {
         if (!$evaluation['passed_wcag_2_aa_lg']) {
-          self::$errors[] = "Low Contrast(AA): <$tag_name> with large text '$text'. "
-                          . "(contrast ratio: " . $contrast_ratio . ")";
+          self::$errors[] = (object) [
+            'type' => 'low contrast',
+            'mode' => 'AA',
+            'tag' => $tag_name,
+            'text' => $text,
+            'text_is_large' => TRUE,
+            'contrast_ratio' => $contrast_ratio,
+          ];
         }
       } else {
         if (!$evaluation['passed_wcag_2_aa']) {
-          self::$errors[] = "Low Contrast(AA): <$tag_name> with text '$text'. "
-                          . "(contrast ratio: " . $contrast_ratio . ")";
+          self::$errors[] = (object) [
+            'type' => 'low contrast',
+            'mode' => 'AA',
+            'tag' => $tag_name,
+            'text' => $text,
+            'text_is_large' => FALSE,
+            'contrast_ratio' => $contrast_ratio,
+          ];
         }
       }
     } else if ($mode == 'AAA') {
       if ($font_is_large) {
         if (!$evaluation['passed_wcag_2_aaa_lg']) {
-          self::$errors[] = "Low Contrast(AAA): <$tag_name> with large text '$text'. "
-                          . "(contrast ratio: " . $contrast_ratio . ")";
+          self::$errors[] = (object) [
+            'type' => 'low contrast',
+            'mode' => 'AAA',
+            'tag' => $tag_name,
+            'text' => $text,
+            'text_is_large' => TRUE,
+            'contrast_ratio' => $contrast_ratio,
+          ];
         }
       } else {
         if (!$evaluation['passed_wcag_2_aaa']) {
-          self::$errors[] = "Low Contrast(AAA): <$tag_name> with text '$text'. "
-                          . "(contrast ratio: " . $contrast_ratio . ")";
+          self::$errors[] = (object) [
+            'type' => 'low contrast',
+            'mode' => 'AA',
+            'tag' => $tag_name,
+            'text' => $text,
+            'text_is_large' => FALSE,
+            'contrast_ratio' => $contrast_ratio,
+          ];
         }
       }
     }
@@ -413,25 +458,7 @@ class ColorContrastChecker
         }
       }
     }
-    return $text;
-  }
-
-  /**
-   * _get_trimmed_text description helper.
-   * If it's longer than 20 character long,
-   * it will only return the first 17 characters + '...'
-   *
-   * @param  String $raw_text
-   * @return string
-   */
-  private static function _get_trimmed_text($raw_text)
-  {
-    $text = str_replace(array("\r", "\n"), '', trim($raw_text));
-    if (strlen($text) > 20) {
-      return substr($text, 0, 17) . '...';
-    } else {
-      return $text;
-    }
+    return str_replace(array("\r", "\n"), '', $text);
   }
 
   /**
