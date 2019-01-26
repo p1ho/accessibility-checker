@@ -41,19 +41,15 @@ class ImageAccessibilityChecker
     self::$errors = array();
     self::$warnings = array();
 
-    if (count($dom->getElementsByTagName('body')) > 0) {
-      $body = $dom->getElementsByTagName('body')[0];
-    } else {
-      $body = NULL;
+    $img_nodes_obj = $dom->getElementsByTagName('img');
+    $img_nodes = array();
+    for ($i = 0; $i < $img_nodes_obj->length; $i++) {
+      $img_nodes[] = $img_nodes_obj[$i];
     }
 
     $eval_array = array();
-    if ($body === NULL) {
-      $eval_array['passed']   = TRUE;
-    } else {
-      self::_eval_DOM($body);
-      $eval_array['passed']   = (count(self::$errors) === 0);
-    }
+    self::_eval_imgs($img_nodes);
+    $eval_array['passed']   = count(self::$errors) === 0;
     $eval_array['errors']   = self::$errors;
     $eval_array['warnings'] = self::$warnings;
 
@@ -61,64 +57,31 @@ class ImageAccessibilityChecker
   }
 
   /**
-   * Recursive DOM Element parsing helper
-   * @param  DOMElement $dom_el
+   * Parses all the images
+   * @param  Array  $img_nodes [list of DOMElement Object with that is <img>]
    * @return void
    */
-  private static function _eval_DOM($dom_el) {
-    if (get_class($dom_el) === 'DOMComment') { return; } // skip comments
-    if ($dom_el->tagName === "img") {
-      if (!$dom_el->hasAttribute('alt')) {
-        $src = self::_get_trimmed_src($dom_el);
-        $error_msg = "Error: image '$src' has no alt attribute.";
-        self::$errors[] = $error_msg;
+  private static function _eval_imgs($img_nodes) {
+    foreach ($img_nodes as $img_node) {
+      $src = $img_el->getAttribute('src');
+
+      if (!$img_node->hasAttribute('alt')) {
+        self::$errors[] = (object) [
+          'type' => 'no alt',
+          'src'  => $src,
+          'recommendation' => 'Add an alt attribute to the img and add a description',
+        ];
       } else {
         $alt = $dom_el->getAttribute('alt');
         if (trim($alt) === "") {
-          $src = self::_get_trimmed_src($dom_el);
-          $warning_msg = "Warning: image '$src' has empty alt attribute.";
-          self::$warnings[] = $warning_msg;
+          self::$warnings[] = (object) [
+            'type' => 'empty alt',
+            'src'  => $src,
+            'recommendation' => 'If this image is integral to the content, please add a description',
+          ];
         }
       }
     }
-    $child_elements = self::_get_childElements($dom_el);
-    foreach ($child_elements as $child_element) {
-      self::_eval_DOM($child_element);
-    }
-  }
-
-  /**
-   * _get_childElements helper. Because DOMElement->childNodes also returns
-   * DOMText which is not what we want, this helps with filtering those out.
-   * @param  DOMElement $dom_el
-   * @return array      [Array containing only DOMElement objects]
-   */
-  private static function _get_childElements($dom_el)
-  {
-    $child_nodes = $dom_el->childNodes;
-    $child_elements = array();
-    foreach ($child_nodes as $node) {
-      if (property_exists($node, 'tagName')) {
-        $child_elements[] = $node;
-      }
-    }
-    return $child_elements;
-  }
-
-  /**
-   * _get_trimmed_src description helper. returns content in 'src' attribute, if it's
-   * longer than 15 char, it will trim and only return the filename.
-   * @param  DOMElement $img_el
-   * @return string
-   */
-  private static function _get_trimmed_src($img_el)
-  {
-    $src = $img_el->getAttribute('src');
-    if (strlen($src) > 15) {
-      $src_split = explode('/', $src);
-      $src = $src_split[count($src_split)-1];
-    }
-    return $src;
   }
 
 }
