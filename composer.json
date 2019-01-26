@@ -1,5 +1,8 @@
 {
     "require-dev": {
         "phpunit/phpunit": "7"
+    },
+    "require": {
+        "stefangabos/zebra_curl": "^1.3"
     }
 }

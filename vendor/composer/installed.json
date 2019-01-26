@@ -1419,6 +1419,55 @@
         "homepage": "https://github.com/sebastianbergmann/version"
     },
     {
+        "name": "stefangabos/zebra_curl",
+        "version": "1.3.5",
+        "version_normalized": "1.3.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/stefangabos/Zebra_cURL.git",
+            "reference": "9ba66ecda85466cf9cd2e29020b1092033daf40d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/stefangabos/Zebra_cURL/zipball/9ba66ecda85466cf9cd2e29020b1092033daf40d",
+            "reference": "9ba66ecda85466cf9cd2e29020b1092033daf40d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2017-11-28T11:06:30+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "Zebra_cURL.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "Stefan Gabos",
+                "email": "contact@stefangabos.ro",
+                "homepage": "https://github.com/stefangabos",
+                "role": "Developer"
+            }
+        ],
+        "description": "A high performance PHP library acting as a wrapper to PHP's libcurl library allowing multiple requests at once asynchronously, in parallel",
+        "homepage": "https://github.com/stefangabos/Zebra_cURL",
+        "keywords": [
+            "asynchronous",
+            "curl",
+            "libcurl",
+            "php",
+            "request",
+            "wrapper"
+        ]
+    },
+    {
         "name": "symfony/polyfill-ctype",
         "version": "v1.10.0",
         "version_normalized": "1.10.0.0",

@@ -587,6 +587,7 @@ class ComposerStaticInit378faf1b6fb202371e2343fa4bbcdd10
         'TheSeer\\Tokenizer\\TokenCollectionException' => __DIR__ . '/..' . '/theseer/tokenizer/src/TokenCollectionException.php',
         'TheSeer\\Tokenizer\\Tokenizer' => __DIR__ . '/..' . '/theseer/tokenizer/src/Tokenizer.php',
         'TheSeer\\Tokenizer\\XMLSerializer' => __DIR__ . '/..' . '/theseer/tokenizer/src/XMLSerializer.php',
+        'Zebra_cURL' => __DIR__ . '/..' . '/stefangabos/zebra_curl/Zebra_cURL.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
