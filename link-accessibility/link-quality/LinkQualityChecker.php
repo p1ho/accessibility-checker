@@ -59,6 +59,7 @@ class LinkQualityChecker {
     $curl->cache(__DIR__. '\..\..\cache/');
     $curl->header($url, function ($result) { self::$result = $result; });
     if (self::$result !== NULL) {
+      $curl_info = self::$result->info;
       $http_code = self::$result->info["http_code"];
       $http_code_class = (int)($http_code/100);
     } else {
@@ -66,7 +67,7 @@ class LinkQualityChecker {
     }
 
     return array(
-      'is_redirect'    => $http_code_class == 3,
+      'is_redirect'    => $curl_info['redirect_time'] > 0,
       'is_dead'        => $http_code_class >= 4 || $http_code_class === 0,
       'is_same_domain' => $is_same_domain,
     );
