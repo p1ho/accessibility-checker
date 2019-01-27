@@ -19,7 +19,12 @@ $testcases_basic_html_fail_strict = array(
     <h4>h4 not nested</h4>
     ',
     array('passed'=>FALSE,'errors'=>array(
-      "heading nested too shallow: <h4> with text 'h4 not nested'."
+      (object) [
+        'type' => 'heading too shallow',
+        'tag' => 'h4',
+        'text' => 'h4 not nested',
+        'recommendation' => "Try nesting this heading deeper.",
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -41,8 +46,18 @@ $testcases_basic_html_fail_strict = array(
     </div>
     ',
     array('passed'=>FALSE,'errors'=>array(
-      "heading nested too deep: <h6> with text 'h6 too deep'.",
-      "heading nested too shallow: <h6> with text 'h6 too shallow'."
+      (object) [
+        'type' => 'heading too deep',
+        'tag' => 'h6',
+        'text' => 'h6 too deep',
+        'recommendation' => "Try nesting this heading shallower.",
+      ],
+      (object) [
+        'type' => 'heading too shallow',
+        'tag' => 'h6',
+        'text' => 'h6 too shallow',
+        'recommendation' => "Try nesting this heading deeper.",
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -58,9 +73,24 @@ $testcases_basic_html_fail_strict = array(
     </div>
     ',
     array('passed'=>FALSE,'errors'=>array(
-      "heading skipped: <h4> is missing before <h5> with text 'Normal h5'.",
-      "heading nested too shallow: <h5> with text 'Normal h5-2'.",
-      "heading nested too shallow: <h5> with text 'Normal h5-3'."
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h5',
+        'text' => 'Normal h5',
+        'recommendation' => "<h4> is expected before the placement of this heading.",
+      ],
+      (object) [
+        'type' => 'heading too shallow',
+        'tag' => 'h5',
+        'text' => 'Normal h5-2',
+        'recommendation' => "Try nesting this heading deeper.",
+      ],
+      (object) [
+        'type' => 'heading too shallow',
+        'tag' => 'h5',
+        'text' => 'Normal h5-3',
+        'recommendation' => "Try nesting this heading deeper.",
+      ],
     ))
   ),
 );

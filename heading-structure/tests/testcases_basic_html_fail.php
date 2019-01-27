@@ -18,7 +18,12 @@ $testcases_basic_html_fail = array(
     <h7>Invalid heading</h7>
     ',
     array('passed'=>False,'errors'=>array(
-      "Invalid heading: <h7> with text 'Invalid heading'."
+      (object) [
+        'type' => 'invalid heading',
+        'tag' => 'h7',
+        'text' => 'Invalid heading',
+        'recommendation' => "Use valid headings only (<h1> through <h6>).",
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -27,7 +32,12 @@ $testcases_basic_html_fail = array(
     <h111>Invalid heading</h111>
     ',
     array('passed'=>False,'errors'=>array(
-      "Invalid heading: <h111> with text 'Invalid heading'."
+      (object) [
+        'type' => 'invalid heading',
+        'tag' => 'h111',
+        'text' => 'Invalid heading',
+        'recommendation' => "Use valid headings only (<h1> through <h6>).",
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -36,7 +46,12 @@ $testcases_basic_html_fail = array(
     <h1>Unallowed h1</h1>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading Unallowed: <h1> with text 'Unallowed h1'."
+      (object) [
+        'type' => 'heading unallowed',
+        'tag' => 'h1',
+        'text' => 'Unallowed h1',
+        'recommendation' => 'Use allowed heading (<h3> to <h6>).',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -45,9 +60,24 @@ $testcases_basic_html_fail = array(
     <h6>Skipped to h6</h6>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading skipped: <h3> is missing before <h6> with text 'Skipped to h6'.",
-      "heading skipped: <h4> is missing before <h6> with text 'Skipped to h6'.",
-      "heading skipped: <h5> is missing before <h6> with text 'Skipped to h6'."
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skipped to h6',
+        'recommendation' => '<h3> is expected before the placement of this heading.',
+      ],
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skipped to h6',
+        'recommendation' => '<h4> is expected before the placement of this heading.',
+      ],
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skipped to h6',
+        'recommendation' => '<h5> is expected before the placement of this heading.',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -58,7 +88,12 @@ $testcases_basic_html_fail = array(
     </h3>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading found in heading: <h4> with text 'h4 wrapped in h3'."
+      (object) [
+        'type' => 'heading inside heading',
+        'tag' => 'h4',
+        'text' => 'h4 wrapped in h3',
+        'recommendation' => 'Do not put heading inside another heading.',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -70,7 +105,12 @@ $testcases_basic_html_fail = array(
     <h3>Normal h3</h3>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading skipped: <h3> is missing before <h4> with text 'h4 before h3'."
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h4',
+        'text' => 'h4 before h3',
+        'recommendation' => '<h3> is expected before the placement of this heading.',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -88,7 +128,12 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading nested too deep: <h4> with text 'h4 Nested Too Deep'."
+      (object) [
+        'type' => 'heading too deep',
+        'tag' => 'h4',
+        'text' => 'h4 Nested Too Deep',
+        'recommendation' => 'Try nesting this heading shallower.',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -111,7 +156,12 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading nested too deep: <h4> with text 'h4 Nested Too Deep'."
+      (object) [
+        'type' => 'heading too deep',
+        'tag' => 'h4',
+        'text' => 'h4 Nested Too Deep',
+        'recommendation' => 'Try nesting this heading shallower.',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -130,7 +180,12 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading nested too shallow: <h4> with text 'h4 nested shallow'."
+      (object) [
+        'type' => 'heading too shallow',
+        'tag' => 'h4',
+        'text' => 'h4 nested shallow',
+        'recommendation' => 'Try nesting this heading deeper.',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -143,8 +198,18 @@ $testcases_basic_html_fail = array(
     </div>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading skipped: <h4> is missing before <h6> with text 'Skip to h6'.",
-      "heading skipped: <h5> is missing before <h6> with text 'Skip to h6'."
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skip to h6',
+        'recommendation' => '<h4> is expected before the placement of this heading.',
+      ],
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skip to h6',
+        'recommendation' => '<h5> is expected before the placement of this heading.',
+      ],
     ))
   ),
 //------------------------------------------------------------------------------
@@ -157,11 +222,36 @@ $testcases_basic_html_fail = array(
     <h6>Skip to h6-2</h6>
     ',
     array('passed'=>False,'errors'=>array(
-      "heading skipped: <h3> is missing before <h6> with text 'Skip to h6'.",
-      "heading skipped: <h4> is missing before <h6> with text 'Skip to h6'.",
-      "heading skipped: <h5> is missing before <h6> with text 'Skip to h6'.",
-      "heading skipped: <h4> is missing before <h6> with text 'Skip to h6-2'.",
-      "heading skipped: <h5> is missing before <h6> with text 'Skip to h6-2'."
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skip to h6',
+        'recommendation' => '<h3> is expected before the placement of this heading.',
+      ],
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skip to h6',
+        'recommendation' => '<h4> is expected before the placement of this heading.',
+      ],
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skip to h6',
+        'recommendation' => '<h5> is expected before the placement of this heading.',
+      ],
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skip to h6-2',
+        'recommendation' => '<h4> is expected before the placement of this heading.',
+      ],
+      (object) [
+        'type' => 'heading skipped',
+        'tag' => 'h6',
+        'text' => 'Skip to h6-2',
+        'recommendation' => '<h5> is expected before the placement of this heading.',
+      ],
     ))
   ),
 );

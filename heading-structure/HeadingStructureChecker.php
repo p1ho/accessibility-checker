@@ -96,17 +96,9 @@ class HeadingStructureChecker
     if (get_class($dom_el) === 'DOMComment') {return;} // skip comments
     // pre-define some variables
     $tag_name = $dom_el->tagName;
-    if (strlen($dom_el->textContent) > 18) {
-      $text_content = substr($dom_el->textContent, 0, 15) . '...';
-    } else {
-      $text_content = $dom_el->textContent;
-    }
-    $msg_heading   = "<$tag_name> with text '$text_content'.";
-    $msg_expected = "Expected <h$expected_heading_rank>.";
-    if ($is_strict) {
-      $msg_misplaced = "$msg_expected Try nesting it shallower.";
-      $msg_skipped = "$msg_expected Try nesting it deeper.";
-    }
+    $text = self::_get_text_content($dom_el);
+    $expected_tag = 'h' . $expected_heading_rank;
+
     // if element is heading
     if (self::_is_heading_tag($tag_name)) {
       $heading_rank = (int) $tag_name[1];
@@ -116,14 +108,24 @@ class HeadingStructureChecker
         5,
         6
       ))) { // As mentioned, h1 and h2 are unallowed
-        self::$errors[] = "heading Unallowed: $msg_heading";
+        self::$errors[] = (object) [
+          'type' => 'heading unallowed',
+          'tag' => $tag_name,
+          'text' => $text,
+          'recommendation' => 'Use allowed heading (<h3> to <h6>).',
+        ];
       } else {
         /*
         Check if this heading element is inside another heading tag,
         if so, it will add an error to the log.
         */
         if ($is_in_h) {
-          self::$errors[] = "heading found in heading: " . $msg_heading;
+          self::$errors[] = (object) [
+            'type' => 'heading inside heading',
+            'tag' => $tag_name,
+            'text' => $text,
+            'recommendation' => 'Do not put heading inside another heading.',
+          ];
         } else {
           /*
           If heading is not inside another <h> tag.
@@ -139,7 +141,12 @@ class HeadingStructureChecker
           if ($rank_diff > 1) {
             for ($i = $rank_diff - 1; $i > 0; $i--) {
               $missing_rank   = $heading_rank - $i;
-              self::$errors[] = "heading skipped: <h$missing_rank> is missing before $msg_heading";
+              self::$errors[] = (object) [
+                'type' => 'heading skipped',
+                'tag' => $tag_name,
+                'text' => $text,
+                'recommendation' => "<h$missing_rank> is expected before the placement of this heading.",
+              ];
             }
           } else {
             if (isset(self::$heading_level_structure[$heading_rank])) {
@@ -154,9 +161,19 @@ class HeadingStructureChecker
               */
               $recorded_nested_level = self::$heading_level_structure[$heading_rank];
               if ($nested_level < $recorded_nested_level) {
-                self::$errors[] = "heading nested too shallow: " . $msg_heading;
+                self::$errors[] = (object) [
+                  'type' => 'heading too shallow',
+                  'tag' => $tag_name,
+                  'text' => $text,
+                  'recommendation' => "Try nesting this heading deeper.",
+                ];
               } else if ($nested_level > $recorded_nested_level) {
-                self::$errors[] = "heading nested too deep: " . $msg_heading;
+                self::$errors[] = (object) [
+                  'type' => 'heading too deep',
+                  'tag' => $tag_name,
+                  'text' => $text,
+                  'recommendation' => "Try nesting this heading shallower.",
+                ];
               } else {
                 if ($is_strict) {
                   /*
@@ -166,7 +183,12 @@ class HeadingStructureChecker
                   The non-strict scenario is already captured in the previous 2 tests.
                   */
                   if ($heading_rank < $expected_heading_rank) {
-                    self::$errors[] = "heading misplaced: $msg_heading $msg_misplaced";
+                    self::$errors[] = (object) [
+                      'type' => 'heading misplaced',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                      'recommendation' => "Try nesting this heading shallower.",
+                    ];
                   }
                 }
               }
@@ -182,11 +204,21 @@ class HeadingStructureChecker
                 The non-strict scenario is already captured in the previous 2 tests.
                 */
                 if ($heading_rank < $expected_heading_rank) {
-                  self::$errors[] = "heading misplaced: $msg_heading $msg_misplaced";
+                  self::$errors[] = (object) [
+                    'type' => 'heading misplaced',
+                    'tag' => $tag_name,
+                    'text' => $text,
+                    'recommendation' => "Try nesting this heading shallower.",
+                  ];
                 } else {
                   if (isset(self::$heading_level_structure[$heading_rank - 1])) {
                     if ($nested_level <= self::$heading_level_structure[$heading_rank - 1]) {
-                      self::$errors[] = "heading nested too shallow: $msg_heading";
+                      self::$errors[] = (object) [
+                        'type' => 'heading too shallow',
+                        'tag' => $tag_name,
+                        'text' => $text,
+                        'recommendation' => "Try nesting this heading deeper.",
+                      ];
                     } else {
                       /*
                       When all previous tests passed, log where this heading is.
@@ -209,7 +241,12 @@ class HeadingStructureChecker
     } else {
       // edgecase: if an invalid headtag is entered (e.g., <h7>), show an error
       if ($tag_name[0] === 'h' && ctype_digit(substr($tag_name, 1))) {
-        self::$errors[] = "Invalid heading: $msg_heading";
+        self::$errors[] = (object) [
+          'type' => 'invalid heading',
+          'tag' => $tag_name,
+          'text' => $text,
+          'recommendation' => "Use valid headings only (<h1> through <h6>).",
+        ];
       }
       /*
       if it's not a heading tag but its nested level was used by another heading
@@ -254,6 +291,43 @@ class HeadingStructureChecker
   private static function _is_heading_tag($s)
   {
     return preg_match('%^h[1-6]{1}$%iu', $s);
+  }
+
+  /**
+   * _get_text_content helper.
+   * Gets text content that are not wrapped in any other tags.
+   * If it encounters another child tag, it will replace its content with '<tag>...</tag>'.
+   * If it encounters <br>, it will replace it with ' '.
+   *
+   * Example:
+   * <div>
+   *   This is
+   *   <div>I'm wrapped</div>
+   *   some text
+   * </div>
+   *
+   * Running this function over the node would return 'This is <div>...</div> some text'.
+   *
+   * @param  DOMElement $dom_el
+   * @return string
+   */
+  private static function _get_text_content($dom_el) {
+    $text = '';
+    foreach ($dom_el->childNodes as $childNode) {
+      if (get_class($childNode) === 'DOMText') {
+        $text .= htmlspecialchars_decode(trim($childNode->wholeText));
+      } else if (get_class($childNode) === 'DOMComment') {
+        continue;
+      } else {
+        if ($childNode->tagName == 'br') {
+          $text .= ' ';
+        } else {
+          $tag = $childNode->tagName;
+          $text .= "<$tag>...</$tag>";
+        }
+      }
+    }
+    return str_replace(array("\r", "\n"), '', $text);
   }
 
 }
