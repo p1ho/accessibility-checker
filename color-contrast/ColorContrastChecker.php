@@ -490,10 +490,9 @@ class ColorContrastChecker
     $style_items = explode(';', strtolower($style_str));
     $styles_raw = array();
     foreach ($style_items as $item) {
-      $item = trim($item);
-      if ($item === "") { break; }
       $item_split = array_map('trim', explode(':', $item));
-      $styles_raw[$item_split[0]] = $item_split[1];
+      if (count($item_split) <= 1) { break; }
+      else $styles_raw[$item_split[0]] = $item_split[1];
     }
 
     // initialize the array to be returned
