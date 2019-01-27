@@ -188,7 +188,7 @@ class LinkTextChecker {
     $curl = new Zebra_cURL();
     $curl->cache(__DIR__. '\..\..\cache/');
     $curl->header($url, function ($result) { self::$result = $result; });
-    if (self::$result !== NULL) {
+    if (self::$result !== NULL && self::$result->response[1] === CURLE_OK) {
       $curl_resp = self::$result->headers['responses'];
       $curl_info = self::$result->info;
     } else {
