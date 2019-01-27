@@ -11,10 +11,10 @@ class AccessibilityChecker
   private static $domain;
 
   public static function init() {
-    require "color-contrast\ColorContrastChecker.php";
-    require "heading-structure\HeadingStructureChecker.php";
-    require "image-accessibility\ImageAccessibilityChecker.php";
-    require "link-accessibility\LinkAccessibilityChecker.php";
+    require "color-contrast/ColorContrastChecker.php";
+    require "heading-structure/HeadingStructureChecker.php";
+    require "image-accessibility/ImageAccessibilityChecker.php";
+    require "link-accessibility/LinkAccessibilityChecker.php";
   }
 
   public static function load_html($html) {
