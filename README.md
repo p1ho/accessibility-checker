@@ -41,12 +41,14 @@ Unit tests were written for some parts that require testing (such as checking co
 ## Dependencies
 
 - [PHPUnit](https://phpunit.de/)
-- [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL) (*Upcoming*)
+- [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL)
+
+## UPDATE
+
+- There was a performance issue with link checker because it checked links sequentially instead of in parallel. [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL) has been integrated which does both multiple curl requests in parallel and caching.
+
+- Updated error messages to object so as to allow more flexibility on the front end in terms of error display.
 
 ## TODO
 
-- There is a performance issue with link checker because it checks links sequentially instead of in parallel, I will look at integrating [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL) which should make things faster
-
-- Right now each error message is just a string, but for more flexibility on the front end, I will convert it into objects with more complete metadata.
-
-- Image Accessibility Checker should also check if the image is dead, will implement after [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL) is successfully implemented for Link Accessibility.
+- (Debating) Image Accessibility Checker should also check if the image is dead, will implement after [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL) is successfully implemented for Link Accessibility.
