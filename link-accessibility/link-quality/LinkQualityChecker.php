@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '\..\..\vendor/stefangabos/zebra_curl/Zebra_cURL.php';
+require_once __DIR__ . '/../../vendor/stefangabos/zebra_curl/Zebra_cURL.php';
 
 /**
  * Link Quality Checker class for accessibility_checker

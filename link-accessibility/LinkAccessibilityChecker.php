@@ -58,9 +58,9 @@ class LinkAccessibilityChecker
     self::$errors = array();
     require_once "link-quality/LinkQualityChecker.php";
     require_once "link-text/LinkTextChecker.php";
-    require_once __DIR__ . '\..\vendor/stefangabos/zebra_curl/Zebra_cURL.php';
+    require_once __DIR__ . '/../vendor/stefangabos/zebra_curl/Zebra_cURL.php';
     self::$curl = new Zebra_cURL();
-    self::$curl->cache(__DIR__ . '\..\cache/', self::$cache_time);
+    self::$curl->cache(__DIR__ . '/../cache/', self::$cache_time);
     self::$curl->threads = 50;
   }
 
