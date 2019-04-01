@@ -12,7 +12,7 @@
  */
 function colorname2rgb($color_name)
 {
-  require "color_name_mapping.php";
+  require "colorname_mapping.php";
   require_once "hex2rgb.php";
   $color_name = strtolower($color_name);
   if (!isset($color_name_mapping[$color_name])) {

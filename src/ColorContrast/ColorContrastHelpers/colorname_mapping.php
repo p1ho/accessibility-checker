@@ -4,7 +4,7 @@
  * Consulted https://stackoverflow.com/questions/2553566/how-to-convert-a-string-color-to-its-hex-code-or-rgb-value
  */
 
-$color_name_mapping = array(
+$colorname_mapping = array(
   'aliceblue' => 'F0F8FF',
   'antiquewhite' => 'FAEBD7',
   'aqua' => '00FFFF',
