@@ -4,7 +4,7 @@
   * A wrapper class for all the individual accessibility modules
   */
 
-class AccessibilityChecker
+class Client
 {
 
   private static $dom;
