@@ -80,7 +80,9 @@ class LinkAccessibilityChecker
     $filtered_paths = array();
     foreach ($paths as $path) {
       if (!preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\)/", $path)) {
-        if ($path[0] === '/') {
+        if (substr($path, 0, 2) === '//') {
+          $filtered_paths[] = "http:$path";
+        } else if ($path[0] === '/') {
           $filtered_paths[] = $domain . $path;
         } else {
           $filtered_paths[] = $path;
@@ -102,7 +104,7 @@ class LinkAccessibilityChecker
       $path = $link_node->getAttribute('href');
 
       // check link-quality
-      $link_quality_eval = LinkQualityChecker::evaluate($path, $domain);
+      $link_quality_eval = LinkQualityChecker::evaluate($path_raw, $domain);
       if ($link_quality_eval['is_redirect']) {
         self::$errors[] = (object) [
           'type' => 'redirect',

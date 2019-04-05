@@ -33,26 +33,46 @@ class LinkQualityChecker {
 
     $is_same_domain = strpos($url, $domain) !== FALSE;
 
+    // if url is empty return dead link
+    if (trim($url) === "")
+    {
+      return array(
+        'is_redirect' => FALSE,
+        'is_dead' => TRUE,
+        'is_same_domain' => FALSE,
+      );
+    }
+
+    // if url starts with "//", prepend with "http:" for zebraCurl
+    else if (substr($url, 0, 2) === "//") {
+      $url = "http:$url";
+    }
+
+    // if url starts with / or \
+    // handle relative link
+    else if (preg_match("/^(\/|\\\\){1}/", $url))
+    {
+      $url = $domain.$url;
+    }
+
     /*
-    if url is empty, or starts with the following:
+    if url starts with:
     - #
     - tel:
     - mailto:
-    - ./ or .\
-    - ../ or ..\
-    if not, check if it's a relative path, if so, prepend domain to url
-     */
-    if (trim($url) === "" ||
-        preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\){1}/", $url)) {
+    - ./ or .\ (because no access to actual path)
+    - ../ or .\\ (because no access to actual path)
+    automatically pass test
+    */
+    else if (preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\){1}/", $url))
+    {
       return array(
-        'is_redirect'    => FALSE,
-        'is_dead'        => FALSE,
+        'is_redirect' => FALSE,
+        'is_dead' => FALSE,
         'is_same_domain' => FALSE,
       );
-    } else if ($url[0] === '/') {
-      $url = $domain . $url;
-      $is_same_domain = FALSE;
     }
+    // else treat url as original
 
     // make HEAD request to get Headers
     $curl = new Zebra_cURL();

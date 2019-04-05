@@ -169,19 +169,30 @@ class LinkTextChecker {
     self::$result = NULL;
 
     /*
-    if url is empty, or starts with the following:
+    if url is empty or starts with:
     - #
     - tel:
     - mailto:
-    - ./ or .\
-    - ../ or ..\
-    if not, check if it's a relative path, if so, prepend domain to url
-     */
+    - ./ or .\ (because no access to actual path)
+    - ../ or .\\ (because no access to actual path)
+    automatically return false
+    */
     if (trim($url) === "" ||
-        preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\){1}/", $url)) {
+      preg_match("/^(#|tel:|mailto:|\.\/|\.\\\\|\.\.\/|\.\.\\\\){1}/", $url))
+    {
       return FALSE;
-    } else if ($url[0] === '/') {
-      $url = $domain . $url;
+    }
+
+    // if url starts with "//", prepend with "http:" for zebraCurl
+    else if (substr($url, 0, 2) === "//") {
+      $url = "http:$url";
+    }
+
+    // if url starts with / or \
+    // handle relative link
+    else if (preg_match("/^(\/|\\\\){1}/", $url))
+    {
+      $url = $domain.$url;
     }
 
     // make HEAD request to get Headers
