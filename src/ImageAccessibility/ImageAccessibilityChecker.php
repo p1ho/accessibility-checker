@@ -63,7 +63,7 @@ class ImageAccessibilityChecker
    */
   private static function _eval_imgs($img_nodes) {
     foreach ($img_nodes as $img_node) {
-      $src = $img_el->getAttribute('src');
+      $src = $img_node->getAttribute('src');
 
       if (!$img_node->hasAttribute('alt')) {
         self::$errors[] = (object) [
@@ -72,7 +72,7 @@ class ImageAccessibilityChecker
           'recommendation' => 'Add an alt attribute to the img and add a description',
         ];
       } else {
-        $alt = $dom_el->getAttribute('alt');
+        $alt = $img_node->getAttribute('alt');
         if (trim($alt) === "") {
           self::$warnings[] = (object) [
             'type' => 'empty alt',
