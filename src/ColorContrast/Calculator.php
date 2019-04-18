@@ -2,7 +2,7 @@
 
 namespace P1ho\AccessibilityChecker\ColorContrast;
 
-require_once "convert2rgb.php";
+require_once "CalculatorHelpers/convert2rgb.php";
 
 /**
  * Color Contrast Calculator
