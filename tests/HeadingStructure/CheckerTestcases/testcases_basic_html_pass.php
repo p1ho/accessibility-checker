@@ -15,40 +15,40 @@
 $testcases_basic_html_pass = array(
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <p>This is HTML without heading</p>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Title</h3>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <div>
       <h3>Title</h3>
     </div>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Title (h3)</h3>
     <div>
       <h4>Title (h4)</h4>
     </div>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Title (h3)</h3>
     <div>
       <h4>Title (h4)</h4>
@@ -57,11 +57,11 @@ $testcases_basic_html_pass = array(
       </div>
     </div>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Title (h3)</h3>
     <div>
       <h4>Title (h4)</h4>
@@ -72,21 +72,21 @@ $testcases_basic_html_pass = array(
       </section>
     </div>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Title (h3)</h3>
     <h3>Title2 (h3)</h3>
     <h3>Title3 (h3)</h3>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   // test h3 through h6
   new testcase(
-    '
+      '
     <div>
       <h3>Title (h3)</h3>
       <div>
@@ -100,30 +100,30 @@ $testcases_basic_html_pass = array(
       </div>
     </div>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   // malformed html should still pass
   new testcase(
-    '
+      '
     <h3>Title</h4>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   // other valid tags that may resemble heading tags are not parsed
   new testcase(
-    '
+      '
     <h3>Title</h3>
     <hr/>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   // malformed html h3 through h6 (no closing tags)
   // Note: their containing element is still properly closed
   new testcase(
-    '
+      '
     <div>
       <h3>Title (h3)
     </div>
@@ -149,13 +149,13 @@ $testcases_basic_html_pass = array(
       <div>
     </div>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   // malformed html test h3 through h6 (wrong closing tags)
   // Note: their containing element is still properly closed
   new testcase(
-    '
+      '
     <div>
       <h3>Title (h3)</h1>
     </div>
@@ -181,7 +181,7 @@ $testcases_basic_html_pass = array(
       <div>
     </div>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
 );

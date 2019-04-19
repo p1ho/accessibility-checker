@@ -14,10 +14,10 @@
 $testcases_basic_html_fail = array(
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h7>Invalid heading</h7>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'invalid heading',
         'tag' => 'h7',
@@ -28,10 +28,10 @@ $testcases_basic_html_fail = array(
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h111>Invalid heading</h111>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'invalid heading',
         'tag' => 'h111',
@@ -42,10 +42,10 @@ $testcases_basic_html_fail = array(
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h1>Unallowed h1</h1>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading unallowed',
         'tag' => 'h1',
@@ -56,10 +56,10 @@ $testcases_basic_html_fail = array(
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h6>Skipped to h6</h6>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading skipped',
         'tag' => 'h6',
@@ -82,12 +82,12 @@ $testcases_basic_html_fail = array(
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>This is h3
       <h4>h4 wrapped in h3</h4>
     </h3>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading inside heading',
         'tag' => 'h4',
@@ -98,13 +98,13 @@ $testcases_basic_html_fail = array(
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <div>
       <h4>h4 before h3</h4>
     </div>
     <h3>Normal h3</h3>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading skipped',
         'tag' => 'h4',
@@ -116,7 +116,7 @@ $testcases_basic_html_fail = array(
 //------------------------------------------------------------------------------
   // inconsistent heading nesting level: too deep
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <div>
       <h4>Normal h4</h4>
@@ -127,7 +127,7 @@ $testcases_basic_html_fail = array(
       </div>
     </div>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading too deep',
         'tag' => 'h4',
@@ -139,7 +139,7 @@ $testcases_basic_html_fail = array(
 //------------------------------------------------------------------------------
   // following last case, normal headings nested at that level won't raise errors
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <div>
       <h4>Normal h4</h4>
@@ -155,7 +155,7 @@ $testcases_basic_html_fail = array(
       </div>
     </div>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading too deep',
         'tag' => 'h4',
@@ -167,7 +167,7 @@ $testcases_basic_html_fail = array(
 //------------------------------------------------------------------------------
   // inconsistent heading nesting level: too shallow
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <div>
       <h4>Normal h4</h4>
@@ -179,7 +179,7 @@ $testcases_basic_html_fail = array(
       </div>
     </div>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading too shallow',
         'tag' => 'h4',
@@ -191,13 +191,13 @@ $testcases_basic_html_fail = array(
 //------------------------------------------------------------------------------
   // skip to h6 should raise error for each heading missed
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <div>
       <h6>Skip to h6</h6>
     </div>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading skipped',
         'tag' => 'h6',
@@ -216,12 +216,12 @@ $testcases_basic_html_fail = array(
   // The skip to second h6 should yield fewer messages because h3 is defined
   // in the second one
   new testcase(
-    '
+      '
     <h6>Skip to h6</h6>
     <h3>Normal h3</h3>
     <h6>Skip to h6-2</h6>
     ',
-    array('passed'=>False,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading skipped',
         'tag' => 'h6',

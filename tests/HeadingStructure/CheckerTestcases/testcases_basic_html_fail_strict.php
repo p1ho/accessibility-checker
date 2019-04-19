@@ -14,11 +14,11 @@
 $testcases_basic_html_fail_strict = array(
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <h4>h4 not nested</h4>
     ',
-    array('passed'=>FALSE,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading too shallow',
         'tag' => 'h4',
@@ -29,7 +29,7 @@ $testcases_basic_html_fail_strict = array(
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <div>
       <h4>Normal h4</h4>
@@ -45,7 +45,7 @@ $testcases_basic_html_fail_strict = array(
       </div>
     </div>
     ',
-    array('passed'=>FALSE,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading too deep',
         'tag' => 'h6',
@@ -62,7 +62,7 @@ $testcases_basic_html_fail_strict = array(
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <div>
       <h5>Normal h5</h5>
@@ -72,7 +72,7 @@ $testcases_basic_html_fail_strict = array(
       <h5>Normal h5-3</h5>
     </div>
     ',
-    array('passed'=>FALSE,'errors'=>array(
+      array('passed'=>false,'errors'=>array(
       (object) [
         'type' => 'heading skipped',
         'tag' => 'h5',

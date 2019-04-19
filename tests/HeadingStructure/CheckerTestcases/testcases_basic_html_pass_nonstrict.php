@@ -14,17 +14,17 @@
 $testcases_basic_html_pass_nonstrict = array(
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <h4>Normal h4</h4>
     <h5>Normal h5</h5>
     <h6>Normal h6</h6>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
   new testcase(
-    '
+      '
     <h3>Normal h3</h3>
     <h4>Normal h4</h4>
     <h3>Normal h5</h3>
@@ -32,7 +32,7 @@ $testcases_basic_html_pass_nonstrict = array(
     <h5>Normal h5</h5>
     <h6>Normal h6</h6>
     ',
-    array('passed'=>TRUE,'errors'=>array())
+      array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
 );
