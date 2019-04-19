@@ -1,43 +1,45 @@
 <?php declare(strict_types=1);
 
- require_once __DIR__ . "/../testcase.php";
+namespace P1ho\AccessibilityChecker\Tests\ColorContrast;
 
- use PHPUnit\Framework\TestCase;
- use P1ho\AccessibilityChecker\ColorContrast\Checker;
+require_once __DIR__ . "/../testcase.php";
 
- final class CheckerTest extends TestCase
- {
-     public function testBasicHTMLPass(): void
-     {
-         require "CheckerTestcases/testcases_basic_html_pass.php";
-         $checker = new Checker();
-         foreach ($testcases_basic_html_pass as $testcase) {
-             $dom = $this->getDOM($testcase->input);
-             $this->assertEquals(
-                 $testcase->expected_output,
-                 $checker->evaluate($dom)
-            );
-         }
-     }
+use PHPUnit\Framework\TestCase;
+use P1ho\AccessibilityChecker\ColorContrast\Checker;
 
-     public function testBasicHTMLFail(): void
-     {
-         require "CheckerTestcases/testcases_basic_html_fail.php";
-         $checker = new Checker();
-         foreach ($testcases_basic_html_fail as $testcase) {
-             $dom = $this->getDOM($testcase->input);
-             $this->assertEquals(
-                 $testcase->expected_output,
-                 $checker->evaluate($dom)
-            );
-         }
-     }
+final class CheckerTest extends TestCase
+{
+    public function testBasicHTMLPass(): void
+    {
+        require "CheckerTestcases/testcases_basic_html_pass.php";
+        $checker = new Checker();
+        foreach ($testcases_basic_html_pass as $testcase) {
+            $dom = $this->getDOM($testcase->input);
+            $this->assertEquals(
+               $testcase->expected_output,
+               $checker->evaluate($dom)
+          );
+        }
+    }
 
-     private function getDOM($s)
-     {
-         $dom = new \DOMDocument();
-         libxml_use_internal_errors(true);
-         $dom->loadHTML($s);
-         return $dom;
-     }
- }
+    public function testBasicHTMLFail(): void
+    {
+        require "CheckerTestcases/testcases_basic_html_fail.php";
+        $checker = new Checker();
+        foreach ($testcases_basic_html_fail as $testcase) {
+            $dom = $this->getDOM($testcase->input);
+            $this->assertEquals(
+               $testcase->expected_output,
+               $checker->evaluate($dom)
+          );
+        }
+    }
+
+    private function getDOM($s)
+    {
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($s);
+        return $dom;
+    }
+}

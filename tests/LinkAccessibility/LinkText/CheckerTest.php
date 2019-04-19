@@ -1,5 +1,7 @@
 <?php
 
+namespace P1ho\AccessibilityChecker\Tests\LinkAccessibility\LinkText;
+
 require_once __DIR__ . "/../../testcase.php";
 
 use PHPUnit\Framework\TestCase;

@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+namespace P1ho\AccessibilityChecker\Tests\ColorContrast;
+
 require_once __DIR__ . "/../testcase.php";
 
 use PHPUnit\Framework\TestCase;
