@@ -9,7 +9,7 @@ namespace P1ho\AccessibilityChecker\LinkAccessibility\LinkQuality;
 class Checker
 {
     private static $result;
-
+    private static $cache_time = 86400;
     /**
      * Check if links (<a>) are optimized
      *
@@ -59,7 +59,7 @@ class Checker
 
         // make HEAD request to get Headers
         $curl = new \Zebra_cURL();
-        $curl->cache(__DIR__. '\..\..\..\cache/');
+        $curl->cache(__DIR__. '\..\..\..\cache/', self::$cache_time);
         $curl->header($link_path, function ($result) {
             self::$result = $result;
         });
