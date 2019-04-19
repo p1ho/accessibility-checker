@@ -31,40 +31,40 @@
     <h1>Rendered Testcases for Color Contrast Checker</h1>
 
     <?php
-    require "testcase.php";
-    require "testcases_basic_html_pass.php";
-    require "testcases_basic_html_fail.php";
+    require __DIR__ . "/../testcase.php";
+    require "CheckerTestcases/testcases_basic_html_pass.php";
+    require "CheckerTestcases/testcases_basic_html_fail.php";
 
     echo '<section>';
     echo '<h2 class="pass">Pass Cases</h2>';
     foreach ($testcases_basic_html_pass as $testcase) {
-      echo '<div class="case">';
-      echo '<h3>Input</h3>';
-      echo '<div class="render">';
-      echo $testcase->input;
-      echo '</div>';
-      echo '<h3>Expected Output</h3>';
-      echo '<p class="pass"><strong>Should Pass</strong></p>';
-      echo '</div>';
+        echo '<div class="case">';
+        echo '<h3>Input</h3>';
+        echo '<div class="render">';
+        echo $testcase->input;
+        echo '</div>';
+        echo '<h3>Expected Output</h3>';
+        echo '<p class="pass"><strong>Should Pass</strong></p>';
+        echo '</div>';
     }
     echo '</section>';
 
     echo '<section>';
     echo '<h2 class="fail">Fail Cases</h2>';
     foreach ($testcases_basic_html_fail as $testcase) {
-      echo '<div class="case">';
-      echo '<h3>Input</h3>';
-      echo '<div class="render">';
-      echo $testcase->input;
-      echo '</div>';
-      echo '<h3>Expected Output</h3>';
-      echo '<p class="fail"><strong>Should Fail:</strong></p>';
-      echo '<ul>';
-      foreach ($testcase->expected_output['errors'] as $error) {
-        echo '<li>'.htmlspecialchars(print_r($error, TRUE)).'</li>';
-      }
-      echo '</ul>';
-      echo '</div>';
+        echo '<div class="case">';
+        echo '<h3>Input</h3>';
+        echo '<div class="render">';
+        echo $testcase->input;
+        echo '</div>';
+        echo '<h3>Expected Output</h3>';
+        echo '<p class="fail"><strong>Should Fail:</strong></p>';
+        echo '<ul>';
+        foreach ($testcase->expected_output['errors'] as $error) {
+            echo '<li>'.htmlspecialchars(print_r($error, true)).'</li>';
+        }
+        echo '</ul>';
+        echo '</div>';
     }
     echo '</section>';
     ?>
