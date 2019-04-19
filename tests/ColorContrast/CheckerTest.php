@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Main test execution for Color Contrast Checker.
- *
- * To run these tests, navigate to the main directory of accessibility-checker,
- * then run:
- * "vendor/bin/phpunit color-contrast/tests".
- *
- * All the tests are going to assume we're running WCAG 2.0 AA
- */
-
  require_once __DIR__ . "/../testcase.php";
 
  use PHPUnit\Framework\TestCase;

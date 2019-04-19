@@ -1,16 +1,5 @@
 <?php
 
-/**
- * Main test execution for Color Contrast Getter.
- *
- * To run these tests, navigate to the main directory of accessibility-checker,
- * then run:
- * "vendor/bin/phpunit color-contrast/color-contrast-helpers/tests".
- *
- * Note: The test does not cover AA/AAA Pass fail cases because the numbers are
- * already hardcoded in the logic and is unlikely to change.
- */
-
 require_once __DIR__ . "/../testcase.php";
 
 use PHPUnit\Framework\TestCase;
