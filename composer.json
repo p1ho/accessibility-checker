@@ -35,24 +35,33 @@
         }
     ],
     "autoload": {
-      "psr-4": {
-          "P1ho\\AccessibilityChecker\\": "/src"
-      },
-      "classmap": [
-        "src/Client.php",
-        "src/Request/Validator.php",
-        "src/Request/Package.php",
-        "src/Report/Fetcher.php",
-        "src/Report/FetchedData.php",
-        "src/Report/Assembler.php"
-      ]
+        "psr-4": {
+            "P1ho\\AccessibilityChecker\\": "/src",
+            "P1ho\\AccessibilityChecker\\Tests\\": "/tests"
+        },
+        "classmap": [
+            "src/ColorContrast/Checker.php",
+            "src/ColorContrast/Calculator.php",
+            "src/HeadingStructure/Checker.php",
+            "src/ImageAccessibility/Checker.php",
+            "src/LinkAccessibility/Checker.php",
+            "src/LinkAccessibility/LinkQuality/Checker.php",
+            "src/LinkAccessibility/LinkText/Checker.php",
+            "tests/ColorContrast/CheckerTest.php",
+            "tests/ColorContrast/CalculatorTest.php",
+            "tests/HeadingStructure/CheckerTest.php",
+            "tests/ImageAccessibility/CheckerTest.php",
+            "tests/LinkAccessibility/CheckerTest.php",
+            "tests/LinkAccessibility/LinkQuality/CheckerTest.php",
+            "tests/LinkAccessibility/LinkText/CheckerTest.php"
+        ]
     },
     "scripts": {
-      "test": "vendor/bin/phpunit tests --verbose --coverage-text",
-      "test-win": "vendor\\bin\\phpunit tests --verbose --coverage-text",
-      "style-fix-download": "curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer",
-      "style-fix": "php php-cs-fixer fix ./",
-      "phpcov-merge": "vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov",
-      "phpcov-merge-win": "vendor\\bin\\phpcov merge --clover build/logs/clover.xml build/cov"
+        "test": "vendor/bin/phpunit tests --verbose --coverage-text",
+        "test-win": "vendor\\bin\\phpunit tests --verbose --coverage-text",
+        "style-fix-download": "curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer",
+        "style-fix": "php php-cs-fixer fix ./",
+        "phpcov-merge": "vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov",
+        "phpcov-merge-win": "vendor\\bin\\phpcov merge --clover build/logs/clover.xml build/cov"
     }
 }
