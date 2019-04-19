@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test cases (Fail) for Color Contrast Checker (Basic HTML)
