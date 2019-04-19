@@ -19,5 +19,4 @@ final class CheckerTest extends TestCase
         }
         $this->assertFalse($hasError);
     }
-
 }
