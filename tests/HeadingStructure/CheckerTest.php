@@ -51,7 +51,7 @@ final class CheckerTest extends TestCase
 
     private function getDOM($s)
     {
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $dom->loadHTML($s);
         return $dom;
