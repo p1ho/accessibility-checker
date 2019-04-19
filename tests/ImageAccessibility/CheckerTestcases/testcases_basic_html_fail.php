@@ -23,7 +23,7 @@ $testcases_basic_html_fail = array(
       '
     <img src="/some/source.jpg" alt="">
     ',
-    array('passed'=>true,'errors'=>array(),'warnings'=>array(
+      array('passed'=>true,'errors'=>array(),'warnings'=>array(
       (object) [
         'type' => 'empty alt',
         'src' => '/some/source.jpg',
