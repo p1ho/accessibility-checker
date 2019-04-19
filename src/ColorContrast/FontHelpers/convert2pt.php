@@ -11,14 +11,14 @@
  * @param  string  $size_value
  * @param  float  $parent_size
  * @param  int $root_size [Optional, default is 12pt, can be overriden]
- * @return float [converted to pt]
+ * @return float|bool [converted to pt, FALSE if error occurs]
  */
 
-function convert2pt(string $tag_name, string $size_value, float $parent_size, int $root_size = 12): float
+function convert2pt(string $tag_name, string $size_value, float $parent_size, int $root_size = 12)
 {
     // if it's negative number, throw error
     if ($size_value[0] === '-') {
-        throw new Exception("Invalid Font-size: font-size may not be negative.");
+        return false;
     }
 
     require "default_font_sizes.php";
@@ -95,19 +95,19 @@ function convert2pt(string $tag_name, string $size_value, float $parent_size, in
         https://github.com/andyjansson/css-unit-converter/blob/master/index.js
          */
         $unit2pt = array(
-      'px' => .75,
-      'cm' => 72.0/2.54,
-      'mm' => 72.0/25.4,
-      'in' => 72,
-      'pc' => 12,
-      'pt' => 1,
-    );
+          'px' => .75,
+          'cm' => 72.0/2.54,
+          'mm' => 72.0/25.4,
+          'in' => 72,
+          'pc' => 12,
+          'pt' => 1,
+        );
 
         if (isset($unit2pt[substr($size_value, -2)])) {
             $unit = substr($size_value, -2);
             return (float)substr($size_value, 0, -2) * $unit2pt[$unit];
         } else {
-            throw new Exception("Conversion Error: Unable to parse given size value.");
+            return false;
         }
     }
 }

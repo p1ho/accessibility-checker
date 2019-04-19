@@ -11,7 +11,7 @@
  * already hardcoded in the logic and is unlikely to change.
  */
 
-require __DIR__ . "/../testcase.php";
+require_once __DIR__ . "/../testcase.php";
 
 use PHPUnit\Framework\TestCase;
 use P1ho\AccessibilityChecker\ColorContrast\Calculator;

@@ -15,9 +15,9 @@ function colorname2rgb(string $color_name): array
     require "colorname_mapping.php";
     require_once "hex2rgb.php";
     $color_name = strtolower($color_name);
-    if (!isset($color_name_mapping[$color_name])) {
+    if (!isset($colorname_mapping[$color_name])) {
         throw new Exception("Invalid Argument: Color name '$color_name' not recognized.");
     } else {
-        return hex2rgb($color_name_mapping[$color_name]);
+        return hex2rgb($colorname_mapping[$color_name]);
     }
 }

@@ -2,6 +2,12 @@
 
 namespace P1ho\AccessibilityChecker\ColorContrast;
 
+use P1ho\AccessibilityChecker\ColorContrast\Calculator;
+
+require_once "CalculatorHelpers/rgba2rgb.php";
+require_once "CalculatorHelpers/hsla2rgb.php";
+require_once "FontHelpers/convert2pt.php";
+
 /**
  * Color Contrast Checker class for Accessibility Checker
  *
@@ -63,116 +69,94 @@ namespace P1ho\AccessibilityChecker\ColorContrast;
 class Checker
 {
 
-  // Keeps track of errors
-    private static $errors;
+    // Keeps track of errors
+    private $errors;
 
     // Keeps track of text
-    private static $content;
+    private $content;
 
     // Keeps mode
-    private static $mode;
+    private $mode;
 
     // Default font-color
-    private static $default_font_color = "black";
+    private $default_font_color;
 
     // Default font-sizes (in pt)
-    private static $default_font_sizes;
+    private $default_font_sizes;
 
     // Block elements
-    private static $block_elements;
+    private $block_elements;
 
     // Temp holder for transparent colors
-    private static $parent_true_bg_color;
-    private static $parent_true_font_color;
+    private $parent_true_bg_color;
+    private $parent_true_font_color;
+
+    /**
+     * __construct function
+     * @param string $mode [WCAG mode (AA or AAA), defaults to AA]
+     */
+    public function __construct($mode = "AA")
+    {
+        require "FontHelpers/default_font_sizes.php";
+        require "FontHelpers/block_elements.php";
+        if (!in_array($mode, ['AA', 'AAA'])) {
+            $mode = 'AA';
+        }
+        $this->mode = $mode;
+        $this->default_font_color     = "black";
+        $this->default_font_sizes     = $default_font_sizes;
+        $this->block_elements         = $block_elements;
+    }
 
     /**
      * evaluate function.
      * If mode is not supplied, it will assume we are evaluating using WCAG 2.0 AA
      * If it is supplied but invalid, we will also assume AA.
      *
-     * @param  DOMObject $dom  [The whole parsed HTML DOM Tree]
-     * @param  string    $mode [either 'AA' or 'AAA']
+     * @param  DOMDocument $dom  [The whole parsed HTML DOM Tree]
      * @return array
      */
-    public static function evaluate($dom, $mode = 'AA')
+    public function evaluate(\DOMDocument $dom): array
     {
-        self::_init();
-        self::$errors = array();
+        $this->errors = [];
+        $this->parent_true_bg_color   = "white";
+        $this->parent_true_font_color = "black";
 
         if (count($dom->getElementsByTagName('body')) > 0) {
             $body = $dom->getElementsByTagName('body')[0];
-            self::$content = $body->textContent;
+            $this->content = $body->textContent;
         } else {
             $body = null;
         }
 
-        $eval_array = array();
+        $eval_array = [];
 
         if ($body === null) {
             $eval_array['passed'] = true;
             $eval_array['errors'] = array();
         } else {
-            if (!in_array($mode, array('AA', 'AAA'))) {
-                $mode = 'AA';
-            }
-            self::$mode = $mode;
-
-            self::_eval_DOM(
-          $body,
-          self::$parent_true_bg_color,
-          self::$parent_true_font_color,
-          12,
-          false,
-          0,
-          false
-      );
-
-            $eval_array['passed'] = (count(self::$errors) === 0);
-            $eval_array['errors'] = self::$errors;
+            $this->_eval_DOM($body, "white", "black", 12, false, 0, false);
+            $eval_array['passed'] = (count($this->errors) === 0);
+            $eval_array['errors'] = $this->errors;
         }
-
         return $eval_array;
-    }
-
-    /**
-     * require needed resources
-     */
-    private static function _init()
-    {
-        require_once "color-contrast-helpers/ColorContrastGetter.php";
-        require_once "color-contrast-helpers/rgba2rgb.php";
-        require_once "color-contrast-helpers/hsla2rgb.php";
-        require_once "font-helper/convert2pt.php";
-        require "font-helper/default_font_sizes.php";
-        require "font-helper/block_elements.php";
-        self::$default_font_sizes     = $default_font_sizes;
-        self::$block_elements         = $block_elements;
-        self::$parent_true_bg_color   = "white";
-        self::$parent_true_font_color = "black";
     }
 
     /**
      * Recursive DOM Element parsing helper
      * @param  DOMElement   $dom_el
-     * @param  String|Array $bg_color     [array form if rgb or hsl]
-     * @param  String|Array $font_color   [array form if rgb or hsl]
-     * @param  Integer      $font_size    [in pt]
-     * @param  Boolean      $font_is_bold
-     * @param  Integer      $semantic_nesting_level
+     * @param  string|array $bg_color [array form if rgb or hsl]
+     * @param  string|array $font_color [array form if rgb or hsl]
+     * @param  int|float    $font_size [in pt]
+     * @param  bool         $font_is_bold
+     * @param  int          $semantic_nesting_level
      * [will increment if the current block is nested inside one of:
      *  <article>, <aside>, <nav>, <section>, because this changes <h1> size ]
-     * @param Boolean       $in_mark      [in mark tag]
+     * @param bool          $in_mark [in mark tag]
      * @return void
      */
-    private static function _eval_DOM(
-      $dom_el,
-      $bg_color,
-      $font_color,
-      $font_size,
-      $font_is_bold,
-      $semantic_nesting_level,
-      $in_mark
-  ) {
+    private function _eval_DOM(\DOMElement $dom_el, $bg_color, $font_color, $font_size, bool $font_is_bold, int $semantic_nesting_level, bool $in_mark): void
+    {
         // skip comments
         if (get_class($dom_el) === 'DOMComment') {
             return;
@@ -182,11 +166,11 @@ class Checker
         $tag_name = $dom_el->tagName;
 
         // skip <style>/<script>/<br>
-        if (in_array($tag_name, array('style', 'script', 'br'))) {
+        if (in_array($tag_name, ['style', 'script', 'br'])) {
             return;
         }
 
-        $text = self::_get_text_content($dom_el);
+        $text = $this->_get_text_content($dom_el);
 
         $root_size         = 12; // assumes root font size is 12 pt to begin with
         $parent_bg_color   = $bg_color;
@@ -205,10 +189,10 @@ class Checker
          - color remains 'black'
          - background resets to 'white'
          */
-        if ($in_mark && in_array($tag_name, self::$block_elements)) {
+        if ($in_mark && in_array($tag_name, $this->block_elements)) {
             $in_mark = false;
             $bg_color = "white";
-            self::$parent_true_bg_color = $bg_color;
+            $this->parent_true_bg_color = $bg_color;
         }
 
         /*
@@ -219,14 +203,14 @@ class Checker
             $font_color = "black";
             $bg_color = "yellow";
             $in_mark = true;
-            self::$parent_true_bg_color = $bg_color;
+            $this->parent_true_bg_color = $bg_color;
         }
 
         /*
         Special check 3:
         if it encounters <b> or <strong>
          */
-        if (in_array($tag_name, array('b', 'strong'))) {
+        if (in_array($tag_name, ['b', 'strong'])) {
             $font_is_bold = true;
         }
 
@@ -242,7 +226,7 @@ class Checker
         Special check 5:
         if it encounters semantic containers that will change <h1> size
          */
-        if (in_array($tag_name, array('article', 'aside', 'nav', 'section'))) {
+        if (in_array($tag_name, ['article', 'aside', 'nav', 'section'])) {
             $semantic_nesting_level += 1;
         }
 
@@ -250,14 +234,14 @@ class Checker
         Special check 6:
         if it encounters heading tag, set its default size
          */
-        if (self::_is_heading_tag($tag_name)) {
+        if ($this->_is_heading_tag($tag_name)) {
             // specialcase <h1>
             if ($tag_name === "h1") {
                 $h_num = (int)$tag_name[1];
                 $h_num += $semantic_nesting_level;
-                $font_size = self::$default_font_sizes["h".$h_num];
+                $font_size = $this->default_font_sizes["h".$h_num];
             } else {
-                $font_size = self::$default_font_sizes[$tag_name];
+                $font_size = $this->default_font_sizes[$tag_name];
             }
             $font_is_bold = true;
         }
@@ -268,25 +252,19 @@ class Checker
 
         $style_str = $dom_el->getAttribute('style');
         if ($style_str !== "") {
-            $style_properties = self::_get_style_properties(
-          $style_str,
-          $tag_name,
-          $parent_bg_color,
-          $parent_font_color,
-          $parent_font_size,
-          $parent_is_bold
-      ); // need parent style in case of relative styles
+            // need parent style in case of relative styles
+            $style_properties = $this->_get_style_properties($style_str, $tag_name, $parent_bg_color, $parent_font_color, $parent_font_size, $parent_is_bold);
 
             if ($style_properties['background-color'] !== null) {
                 if ($style_properties['background-color'] !== "invalid") {
                     $bg_color = $style_properties['background-color'];
                 } else {
-                    self::$errors[] = (object) [
-            'type' => 'invalid color',
-            'property' => 'background-color',
-            'tag' => $tag_name,
-            'text' => $text,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'invalid color',
+                      'property' => 'background-color',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                    ];
                 }
             }
 
@@ -294,12 +272,12 @@ class Checker
                 if ($style_properties['color'] !== "invalid") {
                     $font_color = $style_properties['color'];
                 } else {
-                    self::$errors[] = (object) [
-            'type' => 'invalid color',
-            'property' => 'color',
-            'tag' => $tag_name,
-            'text' => $text,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'invalid color',
+                      'property' => 'color',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                    ];
                 }
             }
 
@@ -307,12 +285,12 @@ class Checker
                 if ($style_properties['font-size'] !== "invalid") {
                     $font_size = $style_properties['font-size'];
                 } else {
-                    self::$errors[] = (object) [
-            'type' => 'invalid size',
-            'property' => 'font-size',
-            'tag' => $tag_name,
-            'text' => $text,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'invalid size',
+                      'property' => 'font-size',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                    ];
                 }
             }
 
@@ -320,86 +298,86 @@ class Checker
                 if ($style_properties['font_is_bold'] !== "invalid") {
                     $font_is_bold = $style_properties['font_is_bold'];
                 } else {
-                    self::$errors[] = (object) [
-            'type' => 'invalid weight',
-            'property' => 'font-weight',
-            'tag' => $tag_name,
-            'text' => $text,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'invalid weight',
+                      'property' => 'font-weight',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                    ];
                 }
             }
         } else {
             // if no style string and font color has alpha value
-            $parent_true = self::$parent_true_font_color;
+            $parent_true = $this->parent_true_font_color;
             if (isset($parent_true['a'])) {
                 // rgba
                 if (isset($parent_true['r']) &&
-            isset($parent_true['g']) &&
-            isset($parent_true['b'])) {
+                    isset($parent_true['g']) &&
+                    isset($parent_true['b'])) {
                     $font_color = rgba2rgb($parent_true, $bg_color);
                 }
                 // hsla
                 if (isset($parent_true['h']) &&
-            isset($parent_true['s']) &&
-            isset($parent_true['l'])) {
+                    isset($parent_true['s']) &&
+                    isset($parent_true['l'])) {
                     $font_color = hsla2rgb($parent_true, $bg_color);
                 }
             }
         }
 
-        $font_is_large = self::_is_large_font($font_size, $font_is_bold);
+        $font_is_large = $this::_is_large_font($font_size, $font_is_bold);
 
         /*--------------------------------------------------------------------------
         Conduct Color Contrast Check
          */
-        $evaluation = ColorContrastGetter::evaluate($font_color, $bg_color);
+        $evaluation = Calculator::evaluate($font_color, $bg_color);
         $contrast_ratio = number_format($evaluation['contrast_ratio'], 2);
-        if (self::$mode === 'AA') {
+        if ($this->mode === 'AA') {
             if ($font_is_large) {
                 if (!$evaluation['passed_wcag_2_aa_lg']) {
-                    self::$errors[] = (object) [
-            'type' => 'low contrast',
-            'mode' => 'AA',
-            'tag' => $tag_name,
-            'text' => $text,
-            'text_is_large' => true,
-            'contrast_ratio' => $contrast_ratio,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'low contrast',
+                      'mode' => 'AA',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                      'text_is_large' => true,
+                      'contrast_ratio' => $contrast_ratio,
+                    ];
                 }
             } else {
                 if (!$evaluation['passed_wcag_2_aa']) {
-                    self::$errors[] = (object) [
-            'type' => 'low contrast',
-            'mode' => 'AA',
-            'tag' => $tag_name,
-            'text' => $text,
-            'text_is_large' => false,
-            'contrast_ratio' => $contrast_ratio,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'low contrast',
+                      'mode' => 'AA',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                      'text_is_large' => false,
+                      'contrast_ratio' => $contrast_ratio,
+                    ];
                 }
             }
         } elseif ($mode == 'AAA') {
             if ($font_is_large) {
                 if (!$evaluation['passed_wcag_2_aaa_lg']) {
-                    self::$errors[] = (object) [
-            'type' => 'low contrast',
-            'mode' => 'AAA',
-            'tag' => $tag_name,
-            'text' => $text,
-            'text_is_large' => true,
-            'contrast_ratio' => $contrast_ratio,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'low contrast',
+                      'mode' => 'AAA',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                      'text_is_large' => true,
+                      'contrast_ratio' => $contrast_ratio,
+                    ];
                 }
             } else {
                 if (!$evaluation['passed_wcag_2_aaa']) {
-                    self::$errors[] = (object) [
-            'type' => 'low contrast',
-            'mode' => 'AA',
-            'tag' => $tag_name,
-            'text' => $text,
-            'text_is_large' => false,
-            'contrast_ratio' => $contrast_ratio,
-          ];
+                    $this->errors[] = (object) [
+                      'type' => 'low contrast',
+                      'mode' => 'AA',
+                      'tag' => $tag_name,
+                      'text' => $text,
+                      'text_is_large' => false,
+                      'contrast_ratio' => $contrast_ratio,
+                    ];
                 }
             }
         }
@@ -407,17 +385,17 @@ class Checker
         /*--------------------------------------------------------------------------
         Go through child elements
          */
-        $child_elements = self::_get_childElements($dom_el);
+        $child_elements = $this->_get_childElements($dom_el);
         foreach ($child_elements as $child_element) {
-            self::_eval_DOM(
-          $child_element,
-          $bg_color,
-          $font_color,
-          $font_size,
-          $font_is_bold,
-          $semantic_nesting_level,
-          $in_mark
-      );
+            $this->_eval_DOM(
+                $child_element,
+                $bg_color,
+                $font_color,
+                $font_size,
+                $font_is_bold,
+                $semantic_nesting_level,
+                $in_mark
+            );
         }
     }
 
@@ -427,10 +405,10 @@ class Checker
      * @param  DOMElement $dom_el
      * @return array      [Array containing only DOMElement objects]
      */
-    private static function _get_childElements($dom_el)
+    private function _get_childElements(\DOMElement $dom_el): array
     {
         $child_nodes    = $dom_el->childNodes;
-        $child_elements = array();
+        $child_elements = [];
         foreach ($child_nodes as $node) {
             if (property_exists($node, 'tagName')) {
                 $child_elements[] = $node;
@@ -457,7 +435,7 @@ class Checker
      * @param  DOMElement $dom_el
      * @return string
      */
-    private static function _get_text_content($dom_el)
+    private function _get_text_content($dom_el): string
     {
         $text = '';
         foreach ($dom_el->childNodes as $childNode) {
@@ -474,7 +452,7 @@ class Checker
                 }
             }
         }
-        return str_replace(array("\r", "\n"), '', $text);
+        return str_replace(["\r", "\n"], '', $text);
     }
 
     /**
@@ -483,30 +461,24 @@ class Checker
      * by style properties we need.
      * font-weight is replaced by font-is-bold for easier parsing
      *
-     * @param  String  $style_str      [the string in the 'style' attribute]
-     * @param  String  $tag_name       [the tag_name (needed for font_size)]
-     * @param  Array|String $parent_bg_color
+     * @param  string  $style_str      [the string in the 'style' attribute]
+     * @param  string  $tag_name       [the tag_name (needed for font_size)]
+     * @param  array|string $parent_bg_color
      * [parent's rendered background color. Could be different from parent's true
      * value if parent had transparent color]
-     * @param  Array|String $parent_font_color
+     * @param  array|string $parent_font_color
      * [parent's rendered font color. Could be different from parent's true value
      * if parent had transparent color]
-     * @param  Integer $font_size      [parent's font size]
-     * @param  Boolean $parent_is_bold [whether the parent font was bold]
+     * @param  int     $font_size      [parent's font size]
+     * @param  bool    $parent_is_bold [whether the parent font was bold]
      * @return array  [array containing color and font style info]
      */
-    private static function _get_style_properties(
-      $style_str,
-      $tag_name,
-      $parent_bg_color,
-      $parent_font_color,
-      $parent_font_size,
-      $parent_is_bold
-  ) {
+    private function _get_style_properties(string $style_str, string $tag_name, $parent_bg_color, $parent_font_color, int $parent_font_size, bool $parent_is_bold): array
+    {
 
-    // parse style string
+        // parse style string
         $style_items = explode(';', strtolower($style_str));
-        $styles_raw = array();
+        $styles_raw = [];
         foreach ($style_items as $item) {
             $item_split = array_map('trim', explode(':', $item));
             if (count($item_split) <= 1) {
@@ -517,65 +489,64 @@ class Checker
         }
 
         // initialize the array to be returned
-        $styles = array(
-      'background-color' => null,
-      'color' => null,
-      'font-size' => null,
-      'font_is_bold' => null,
-    );
+        $styles = [
+          'background-color' => null,
+          'color' => null,
+          'font-size' => null,
+          'font_is_bold' => null,
+        ];
 
         // parse background (note: this must be done before parsing font)
         $property = 'background-color';
-        $parent_true = self::$parent_true_bg_color;
+        $parent_true = $this->parent_true_bg_color;
         if (isset($styles_raw[$property])) {
             $value = $styles_raw[$property];
 
-            if (self::_is_color_function($value)) {
-                $child_color_array = self::_color_function_to_array($value);
-                self::$parent_true_bg_color = $child_color_array;
+            if ($this->_is_color_function($value)) {
+                $child_color_array = $this->_color_function_to_array($value);
+                $this->parent_true_bg_color = $child_color_array;
 
                 // if it's transparent
                 if (isset($child_color_array['a'])) {
                     // rgba
                     if (isset($child_color_array['r']) &&
-              isset($child_color_array['g']) &&
-              isset($child_color_array['b'])) {
+                        isset($child_color_array['g']) &&
+                        isset($child_color_array['b'])) {
                         $styles[$property] = rgba2rgb($child_color_array, $parent_bg_color);
                     }
                     // hsla
                     if (isset($child_color_array['h']) &&
-              isset($child_color_array['s']) &&
-              isset($child_color_array['l'])) {
+                        isset($child_color_array['s']) &&
+                        isset($child_color_array['l'])) {
                         $styles[$property] = hsla2rgb($child_color_array, $parent_bg_color);
                     }
                 } else {
                     $styles[$property] = $child_color_array;
                 }
-            } elseif (self::_is_hex($value) || self::_is_color_name($value)) {
+            } elseif ($this->_is_hex($value) || $this->_is_color_name($value)) {
                 $styles[$property] = $value;
-                self::$parent_true_bg_color = $value;
+                $this->parent_true_bg_color = $value;
             } elseif ($value === "transparent" || $value === "initial") {
 
-        // can set these to rendered parent bg color because connection to the
+                // can set these to rendered parent bg color because connection to the
                 // potential transparency is lost.
                 $styles[$property] = $parent_bg_color;
-                self::$parent_true_bg_color = $parent_bg_color;
+                $this->parent_true_bg_color = $parent_bg_color;
             } elseif ($value === "inherit") {
 
-        // if it's transparent
-                if (gettype($parent_true) === 'array' &&
-            isset($parent_true['a'])) {
+                // if it's transparent
+                if (gettype($parent_true) === 'array' && isset($parent_true['a'])) {
 
-          // rgba
+                    // rgba
                     if (isset($parent_true['r']) &&
-              isset($parent_true['g']) &&
-              isset($parent_true['b'])) {
+                        isset($parent_true['g']) &&
+                        isset($parent_true['b'])) {
                         $styles[$property] = rgba2rgb($parent_true, $parent_bg_color);
                     }
                     // hsla
                     if (isset($parent_true['h']) &&
-              isset($parent_true['s']) &&
-              isset($parent_true['l'])) {
+                        isset($parent_true['s']) &&
+                        isset($parent_true['l'])) {
                         $styles[$property] = hsla2rgb($parent_true, $parent_bg_color);
                     }
                 } else {
@@ -588,65 +559,65 @@ class Checker
 
         // parse font color
         $property = 'color';
-        $parent_true = self::$parent_true_font_color;
+        $parent_true = $this->parent_true_font_color;
         $bg_color = $styles['background-color'] ?? $parent_bg_color;
 
         if (isset($styles_raw[$property])) {
             $value = $styles_raw[$property];
 
-            if (self::_is_color_function($value)) {
-                $child_color_array = self::_color_function_to_array($value);
-                self::$parent_true_font_color = $child_color_array;
+            if ($this->_is_color_function($value)) {
+                $child_color_array = $this->_color_function_to_array($value);
+                $this->parent_true_font_color = $child_color_array;
 
                 // if it's transparent
                 if (isset($child_color_array['a'])) {
                     // rgba
                     if (isset($child_color_array['r']) &&
-              isset($child_color_array['g']) &&
-              isset($child_color_array['b'])) {
+                        isset($child_color_array['g']) &&
+                        isset($child_color_array['b'])) {
                         $styles[$property] = rgba2rgb($child_color_array, $bg_color);
                     }
                     // hsla
                     if (isset($child_color_array['h']) &&
-              isset($child_color_array['s']) &&
-              isset($child_color_array['l'])) {
+                        isset($child_color_array['s']) &&
+                        isset($child_color_array['l'])) {
                         $styles[$property] = hsla2rgb($child_color_array, $bg_color);
                     }
                 } else {
                     $styles[$property] = $child_color_array;
                 }
-            } elseif (self::_is_hex($value) || self::_is_color_name($value)) {
+            } elseif ($this->_is_hex($value) || $this->_is_color_name($value)) {
                 $styles[$property] = $value;
-                self::$parent_true_font_color = $value;
+                $this->parent_true_font_color = $value;
             } elseif ($value === "transparent") {
                 $styles[$property] = $bg_color;
-                self::$parent_true_font_color = array(
-          'r' => 0,
-          'g' => 0,
-          'b' => 0,
-          'a' => 0
-        );
+                $this->parent_true_font_color = [
+                  'r' => 0,
+                  'g' => 0,
+                  'b' => 0,
+                  'a' => 0
+                ];
             } elseif ($value === "initial") {
 
-        // by default texts are black
-                $styles[$property] = self::$default_font_color;
-                self::$parent_true_font_color = self::$default_font_color;
+                // by default texts are black
+                $styles[$property] = $this->default_font_color;
+                $this->parent_true_font_color = $this->default_font_color;
             } elseif ($value === "inherit") {
 
-        // if it's transparent
+                // if it's transparent
                 if (gettype($parent_true) === 'array' &&
-            isset($parent_true['a'])) {
+                    isset($parent_true['a'])) {
 
-          // rgba
+                    // rgba
                     if (isset($parent_true['r']) &&
-              isset($parent_true['g']) &&
-              isset($parent_true['b'])) {
+                        isset($parent_true['g']) &&
+                        isset($parent_true['b'])) {
                         $styles[$property] = rgba2rgb($parent_true, $bg_color);
                     }
                     // hsla
                     if (isset($parent_true['h']) &&
-              isset($parent_true['s']) &&
-              isset($parent_true['l'])) {
+                        isset($parent_true['s']) &&
+                        isset($parent_true['l'])) {
                         $styles[$property] = hsla2rgb($parent_true, $bg_color);
                     }
                 } else {
@@ -658,18 +629,18 @@ class Checker
         } else {
             // if its parent is transparent (which means it will inherit)
             if (gettype($parent_true) === 'array' &&
-          isset($parent_true['a'])) {
+                isset($parent_true['a'])) {
 
-        // rgba
+                // rgba
                 if (isset($parent_true['r']) &&
-            isset($parent_true['g']) &&
-            isset($parent_true['b'])) {
+                    isset($parent_true['g']) &&
+                    isset($parent_true['b'])) {
                     $styles[$property] = rgba2rgb($parent_true, $bg_color);
                 }
                 // hsla
                 if (isset($parent_true['h']) &&
-            isset($parent_true['s']) &&
-            isset($parent_true['l'])) {
+                    isset($parent_true['s']) &&
+                    isset($parent_true['l'])) {
                     $styles[$property] = hsla2rgb($parent_true, $bg_color);
                 }
             }
@@ -686,16 +657,13 @@ class Checker
         if (isset($styles_raw['font-size'])) {
             $property = 'font-size';
             $value = $styles_raw[$property];
-            try {
-                $styles[$property] = convert2pt(
-            $tag_name,
-            $value,
-            $parent_font_size,
-            $root_size = self::$default_font_sizes['html']
-        );
-            } catch (Exception $e) {
-                $styles[$property] = "invalid";
-            }
+            $converted_pt = convert2pt(
+                $tag_name,
+                $value,
+                $parent_font_size,
+                $root_size = $this->default_font_sizes['html']
+            );
+            $styles[$property] = $converted_pt !== false ? $converted_pt : "invalid";
         }
 
         // parse font-weight
@@ -703,12 +671,12 @@ class Checker
             $property = 'font-weight';
             $value = $styles_raw[$property];
             try {
-                $styles['font_is_bold'] = self::_font_is_bold(
-            $tag_name,
-            $value,
-            $parent_is_bold
-        );
-            } catch (Exception $e) {
+                $styles['font_is_bold'] = $this->_font_is_bold(
+                    $tag_name,
+                    $value,
+                    $parent_is_bold
+                );
+            } catch (\Exception $e) {
                 $styles['font_is_bold'] = "invalid";
             }
         }
@@ -719,27 +687,31 @@ class Checker
     /**
      * _is_heading_tag function. check if passed in tag name ($s) is one of the
      * valid heading tags
-     * @param  String  $s [tag name]
-     * @return boolean
+     * @param  string  $s [tag name]
+     * @return bool
      */
-    private static function _is_heading_tag($s)
+    private function _is_heading_tag(string $s): bool
     {
-        return preg_match('%^h[1-6]{1}$%iu', $s);
+        return preg_match('%^h[1-6]{1}$%iu', $s) === 1;
     }
 
     /**
      * check if color value is rgb() / rgba() / hsl() / hsla()
+     * @param string $s
+     * @return bool
      */
-    private static function _is_color_function($s)
+    private function _is_color_function(string $s): bool
     {
-        return preg_match('%^((rgb)|(hsl))a?(\({1}.*\){1})$%iu', $s);
+        return preg_match('%^((rgb)|(hsl))a?(\({1}.*\){1})$%iu', $s) === 1;
     }
 
     /**
      * converts rgb() / rgba() / hsl() / hsla() to array form
      * Note: hsl() / hsla() has % in the values, it will be trimmed
+     * @param string $s
+     * @return array
      */
-    private static function _color_function_to_array($s)
+    private function _color_function_to_array(string $s): array
     {
         if (strpos($s, 'rgba(') === 0) {
             $num_str = substr($s, 5, -1);
@@ -747,20 +719,20 @@ class Checker
             if (count($num_array) != 4) {
                 $num_array[3] = 1;
             }
-            return array(
-        'r' => (float)$num_array[0],
-        'g' => (float)$num_array[1],
-        'b' => (float)$num_array[2],
-        'a' => (float)$num_array[3],
-      );
+            return [
+              'r' => (float)$num_array[0],
+              'g' => (float)$num_array[1],
+              'b' => (float)$num_array[2],
+              'a' => (float)$num_array[3],
+            ];
         } elseif (strpos($s, 'rgb(') === 0) {
             $num_str = substr($s, 4, -1);
             $num_array = array_map('trim', explode(',', $num_str));
-            return array(
-        'r' => (float)$num_array[0],
-        'g' => (float)$num_array[1],
-        'b' => (float)$num_array[2],
-      );
+            return [
+              'r' => (float)$num_array[0],
+              'g' => (float)$num_array[1],
+              'b' => (float)$num_array[2],
+            ];
         } elseif (strpos($s, 'hsla(') === 0) {
             $num_str = substr($s, 5, -1);
             $num_array = array_map(function ($x) {
@@ -769,40 +741,44 @@ class Checker
             if (count($num_array) != 4) {
                 $num_array[3] = 1;
             }
-            return array(
-        'h' => (float)$num_array[0],
-        's' => (float)$num_array[1],
-        'l' => (float)$num_array[2],
-        'a' => (float)$num_array[3],
-      );
+            return [
+              'h' => (float)$num_array[0],
+              's' => (float)$num_array[1],
+              'l' => (float)$num_array[2],
+              'a' => (float)$num_array[3],
+            ];
         } elseif (strpos($s, 'hsl(') === 0) {
             $num_str = substr($s, 4, -1);
             $num_array = array_map(function ($x) {
                 return trim(str_replace('%', '', $x));
             }, explode(',', $num_str));
-            return array(
-        'h' => (float)$num_array[0],
-        's' => (float)$num_array[1],
-        'l' => (float)$num_array[2],
-      );
+            return [
+              'h' => (float)$num_array[0],
+              's' => (float)$num_array[1],
+              'l' => (float)$num_array[2],
+            ];
         }
     }
 
     /**
      * check if string is '#' followed by 3 or 6 characters
+     * @param string $s
+     * @return bool
      */
-    private static function _is_hex($s)
+    private function _is_hex(string $s): bool
     {
-        return preg_match('%^#{1}([\d\w]{3}|[\d\w]{6})$%iu', $s);
+        return preg_match('%^#{1}([\d\w]{3}|[\d\w]{6})$%iu', $s) === 1;
     }
 
     /**
      * check if string is a valid color_name
+     * @param string $s
+     * @return bool
      */
-    private static function _is_color_name($s)
+    private function _is_color_name(string $s): bool
     {
-        require "color-contrast-helpers/color_name_mapping.php";
-        return isset($color_name_mapping[$s]);
+        require "CalculatorHelpers/colorname_mapping.php";
+        return isset($colorname_mapping[$s]);
     }
 
     /**
@@ -810,17 +786,17 @@ class Checker
      * https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight
      * http://htmldog.com/references/css/properties/font-weight/
      *
-     * @param String  $tag_name       [tag this is style found in]
-     * @param String  $value          [actual style property value]
-     * @param Boolean $parent_is_bold [whether parent was bold]
-     * @return boolean
+     * @param string  $tag_name       [tag this is style found in]
+     * @param string  $value          [actual style property value]
+     * @param bool    $parent_is_bold [whether parent was bold]
+     * @return bool
      */
-    private static function _font_is_bold($tag_name, $value, $parent_is_bold)
+    private function _font_is_bold(string $tag_name, string $value, bool $parent_is_bold): bool
     {
-        if (in_array($value, array("bold","bolder"))) {
+        if (in_array($value, ["bold", "bolder"])) {
             return true;
         }
-        if (in_array($value, array("normal","lighter","unset"))) {
+        if (in_array($value, ["normal","lighter","unset"])) {
             return false;
         }
         if ($value === "inherit") {
@@ -828,17 +804,17 @@ class Checker
         }
         if ($value === "initial") {
             // I tested <b> and <strong>, when set to initial, they are not bolded.
-            return self::_is_heading_tag($tag_name);
+            return $this->_is_heading_tag($tag_name);
         }
         if (is_numeric($value)) {
             $num = (float)$value;
             if ($num > 1 && $num < 1000) {
                 return $num > 700;
             } else {
-                throw new Exception("invalid Argument: numeric font-weight out of range. ($num was given)");
+                throw new \Exception("invalid Argument: numeric font-weight out of range. ($num was given)");
             }
         } else {
-            throw new Exception("Invalid Argument: invalid font-weight. ('$value' was given)");
+            throw new \Exception("Invalid Argument: invalid font-weight. ('$value' was given)");
         }
     }
 
@@ -847,11 +823,11 @@ class Checker
      * Takes in a size value (in pt) and a boolean on whether it is bold,
      * then checks against WCAG 2.0 guideline to see if it qualifies as large.
      * See: https://developer.paciellogroup.com/blog/2012/05/whats-large-text-in-wcag-2-0-parlance/
-     * @param  Number   $font_size   [in pt]
-     * @param  Boolean  $is_bold     [see if the text is bold]
-     * @return boolean
+     * @param  int|float $font_size [in pt]
+     * @param  bool      $is_bold   [see if the text is bold]
+     * @return bool
      */
-    private static function _is_large_font($font_size, $is_bold)
+    private function _is_large_font($font_size, bool $is_bold): bool
     {
         return $font_size >= 18 || ($font_size >= 14 && $is_bold);
     }
