@@ -64,7 +64,7 @@ class Checker
         // after 5 seconds.
         $curl->option([
           CURLOPT_TIMEOUT => 5,
-          CURLOPT_CONNECTTTIMEOUT => 5
+          CURLOPT_CONNECTTIMEOUT => 5
         ]);
         $curl->header($link_path, function ($result) {
             if ($result->response[1] == CURLE_OK) {
