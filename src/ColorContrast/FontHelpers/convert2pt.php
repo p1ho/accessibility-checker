@@ -23,17 +23,17 @@ function convert2pt(string $tag_name, string $size_value, float $parent_size, in
 
     require "default_font_sizes.php";
 
-    $css_value_lookup = array(
-    'medium'   => 12,
-    'xx-small' => 7,
-    'x-small'  => 7.5,
-    'small'    => 10,
-    'large'    => 13.5,
-    'x-large'  => 18,
-    'xx-large' => 24,
-    'smaller'  => 10,
-    'larger'   => 14,
-  );
+    $css_value_lookup = [
+        'medium'   => 12,
+        'xx-small' => 7,
+        'x-small'  => 7.5,
+        'small'    => 10,
+        'large'    => 13.5,
+        'x-large'  => 18,
+        'xx-large' => 24,
+        'smaller'  => 10,
+        'larger'   => 14];
+
     if (isset($css_value_lookup[$size_value])) {
         return $css_value_lookup[$size_value];
     } elseif ($size_value === "initial") {
@@ -94,14 +94,13 @@ function convert2pt(string $tag_name, string $size_value, float $parent_size, in
         The absolute conversion table was taken from:
         https://github.com/andyjansson/css-unit-converter/blob/master/index.js
          */
-        $unit2pt = array(
+        $unit2pt = [
           'px' => .75,
           'cm' => 72.0/2.54,
           'mm' => 72.0/25.4,
           'in' => 72,
           'pc' => 12,
-          'pt' => 1,
-        );
+          'pt' => 1];
 
         if (isset($unit2pt[substr($size_value, -2)])) {
             $unit = substr($size_value, -2);

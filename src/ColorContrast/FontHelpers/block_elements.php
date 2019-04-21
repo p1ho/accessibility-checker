@@ -4,7 +4,7 @@
  * Lists all the HTML5 block elements
  */
 
- $block_elements = array(
+ $block_elements = [
    'address',
    'article',
    'aside',
@@ -39,5 +39,4 @@
    'table',
    'tfoot',
    'ul',
-   'video',
- );
+   'video'];

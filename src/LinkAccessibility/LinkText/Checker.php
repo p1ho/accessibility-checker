@@ -48,8 +48,7 @@ class Checker
         'application/ogg' => 0,
         'application/json' => 0,
         'application/ecmascript' => 0,
-        'application/javascript' => 0,
-    ];
+        'application/javascript' => 0];
 
     private static $blacklist_words_set = [
         "check" => 0,
@@ -73,8 +72,7 @@ class Checker
         "view" => 0,
         "visit" => 0,
         "find" => 0,
-        "it" => 0,
-    ];
+        "it" => 0];
 
     // temp storage for curl request result
     private static $result;
@@ -121,7 +119,7 @@ class Checker
             'url_is_download'        => self::_url_is_download($link_url, $page_path, $site_url),
             'text_has_download'      => strpos(strtolower($link_text), 'download') !== false,
             'url_is_pdf'             => self::_url_is_pdf($link_url, $page_path, $site_url),
-            'text_has_pdf'           => strpos(strtolower($link_text), 'pdf') !== false,
+            'text_has_pdf'           => strpos(strtolower($link_text), 'pdf') !== false
         ];
 
         return $eval;

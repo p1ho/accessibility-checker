@@ -78,6 +78,13 @@ class Checker
                     'link_text' => $text,
                     'recommendation' => 'Use relative URL.'];
             }
+            if ($link_quality_eval['timedout']) {
+                $errors[] = (object) [
+                    'type' => 'slow connection',
+                    'path' => $path,
+                    'link_text' => $text,
+                    'recommendation' => 'Troubleshoot why the page takes so long to load.'];
+            }
 
             // check link-text accessibility
             $link_text_eval = LinkText\Checker::evaluate($link_node, $page_url);

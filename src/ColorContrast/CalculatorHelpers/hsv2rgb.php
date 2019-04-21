@@ -41,7 +41,7 @@ function hsv2rgb($h, $s, $v): array
     $q  = $v * (1 - $f * $s);
     $t  = $v * (1 - (1 - $f) * $s);
 
-    $rgb = array();
+    $rgb = [];
 
     switch ($hi) {
     case 0:
@@ -75,7 +75,7 @@ function hsv2rgb($h, $s, $v): array
       $rgb['b'] = $q;
       break;
   }
-    foreach (array('r', 'g', 'b') as $color) {
+    foreach (['r','g','b'] as $color) {
         $rgb[$color] = min(255, round($rgb[$color] * 256));
     }
     return $rgb;

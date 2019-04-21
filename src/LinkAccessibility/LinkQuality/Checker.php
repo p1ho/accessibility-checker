@@ -52,7 +52,7 @@ class Checker
                 'is_redirect'    => false,
                 'is_dead'        => false,
                 'is_same_domain' => false,
-            ];
+                'timed_out'      => false];
         } else {
             $link_path = self::compute_link_url($link_path, $page_path, $site_url);
         }
@@ -60,22 +60,35 @@ class Checker
         // make HEAD request to get Headers
         $curl = new \Zebra_cURL();
         $curl->cache(__DIR__. '\..\..\..\cache/', self::$cache_time);
+        // HEAD requests should NOT take long to return results, will terminate
+        // after 5 seconds.
+        $curl->option([
+          CURLOPT_TIMEOUT => 5,
+          CURLOPT_CONNECTTTIMEOUT => 5
+        ]);
         $curl->header($link_path, function ($result) {
-            self::$result = $result;
+            if ($result->response[1] == CURLE_OK) {
+                self::$result = $result;
+            } else {
+                self::$result = null;
+            }
         });
         if (self::$result !== null) {
             $curl_info = self::$result->info;
             $http_code = self::$result->info["http_code"];
             $http_code_class = (int)($http_code/100);
+            return [
+                'is_redirect'    => $curl_info['redirect_time'] > 0,
+                'is_dead'        => $http_code_class >= 4 || $http_code_class === 0,
+                'is_same_domain' => $is_same_domain,
+                'timed_out'      => false];
         } else {
-            return false;
+            return [
+                'is_redirect'    => false,
+                'is_dead'        => false,
+                'is_same_domain' => $is_same_domain,
+                'timed_out'      => true];
         }
-
-        return [
-            'is_redirect'    => $curl_info['redirect_time'] > 0,
-            'is_dead'        => $http_code_class >= 4 || $http_code_class === 0,
-            'is_same_domain' => $is_same_domain,
-        ];
     }
 
     /**

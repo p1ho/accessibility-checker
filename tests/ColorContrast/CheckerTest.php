@@ -16,8 +16,8 @@ final class CheckerTest extends TestCase
         foreach ($testcases_basic_html_pass as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals(
-               $testcase->expected_output,
-               $checker->evaluate($dom)
+                $testcase->expected_output,
+                $checker->evaluate($dom)
           );
         }
     }
@@ -29,8 +29,8 @@ final class CheckerTest extends TestCase
         foreach ($testcases_basic_html_fail as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals(
-               $testcase->expected_output,
-               $checker->evaluate($dom)
+                $testcase->expected_output,
+                $checker->evaluate($dom)
           );
         }
     }

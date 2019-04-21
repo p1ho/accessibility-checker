@@ -263,7 +263,7 @@ class Checker
                       'type' => 'invalid color',
                       'property' => 'background-color',
                       'tag' => $tag_name,
-                      'text' => $text,
+                      'text' => $text
                     ];
                 }
             }
@@ -276,7 +276,7 @@ class Checker
                       'type' => 'invalid color',
                       'property' => 'color',
                       'tag' => $tag_name,
-                      'text' => $text,
+                      'text' => $text
                     ];
                 }
             }
@@ -289,7 +289,7 @@ class Checker
                       'type' => 'invalid size',
                       'property' => 'font-size',
                       'tag' => $tag_name,
-                      'text' => $text,
+                      'text' => $text
                     ];
                 }
             }
@@ -302,7 +302,7 @@ class Checker
                       'type' => 'invalid weight',
                       'property' => 'font-weight',
                       'tag' => $tag_name,
-                      'text' => $text,
+                      'text' => $text
                     ];
                 }
             }
@@ -341,7 +341,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'text_is_large' => true,
-                      'contrast_ratio' => $contrast_ratio,
+                      'contrast_ratio' => $contrast_ratio
                     ];
                 }
             } else {
@@ -352,7 +352,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'text_is_large' => false,
-                      'contrast_ratio' => $contrast_ratio,
+                      'contrast_ratio' => $contrast_ratio
                     ];
                 }
             }
@@ -365,7 +365,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'text_is_large' => true,
-                      'contrast_ratio' => $contrast_ratio,
+                      'contrast_ratio' => $contrast_ratio
                     ];
                 }
             } else {
@@ -376,7 +376,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'text_is_large' => false,
-                      'contrast_ratio' => $contrast_ratio,
+                      'contrast_ratio' => $contrast_ratio
                     ];
                 }
             }

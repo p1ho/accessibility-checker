@@ -40,7 +40,7 @@ class Calculator
    */
     public static function evaluate($color_1, $color_2): array
     {
-        $eval_array = array();
+        $eval_array = [];
         $color_1_rgb = array_map(function ($x) {
             return $x/255;
         }, convert2rgb($color_1));

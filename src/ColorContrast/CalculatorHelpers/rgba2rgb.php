@@ -42,7 +42,7 @@ function rgba2rgb(array $fg, $bg): array
     }
 
     // correct foreground
-    foreach (array('r','g','b') as $color) {
+    foreach (['r','g','b'] as $color) {
         if ($fg[$color] < 0) {
             $fg[$color] = 0;
         } elseif ($fg[$color] > 255) {

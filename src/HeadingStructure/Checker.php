@@ -124,7 +124,7 @@ class Checker
                   'type' => 'heading unallowed',
                   'tag' => $tag_name,
                   'text' => $text,
-                  'recommendation' => 'Use allowed heading (<h3> to <h6>).',
+                  'recommendation' => 'Use allowed heading (<h3> to <h6>).'
                 ];
             } else {
                 /*
@@ -136,7 +136,7 @@ class Checker
                       'type' => 'heading inside heading',
                       'tag' => $tag_name,
                       'text' => $text,
-                      'recommendation' => 'Do not put heading inside another heading.',
+                      'recommendation' => 'Do not put heading inside another heading.'
                     ];
                 } else {
                     /*
@@ -157,7 +157,7 @@ class Checker
                               'type' => 'heading skipped',
                               'tag' => $tag_name,
                               'text' => $text,
-                              'recommendation' => "<h$missing_rank> is expected before the placement of this heading.",
+                              'recommendation' => "<h$missing_rank> is expected before the placement of this heading."
                             ];
                         }
                     } else {
@@ -177,14 +177,14 @@ class Checker
                                   'type' => 'heading too shallow',
                                   'tag' => $tag_name,
                                   'text' => $text,
-                                  'recommendation' => "Try nesting this heading deeper.",
+                                  'recommendation' => "Try nesting this heading deeper."
                                 ];
                             } elseif ($nested_level > $recorded_nested_level) {
                                 $this->errors[] = (object) [
                                   'type' => 'heading too deep',
                                   'tag' => $tag_name,
                                   'text' => $text,
-                                  'recommendation' => "Try nesting this heading shallower.",
+                                  'recommendation' => "Try nesting this heading shallower."
                                 ];
                             } else {
                                 if ($this->is_strict) {
@@ -199,7 +199,7 @@ class Checker
                                           'type' => 'heading misplaced',
                                           'tag' => $tag_name,
                                           'text' => $text,
-                                          'recommendation' => "Try nesting this heading shallower.",
+                                          'recommendation' => "Try nesting this heading shallower."
                                         ];
                                     }
                                 }
@@ -220,7 +220,7 @@ class Checker
                                       'type' => 'heading misplaced',
                                       'tag' => $tag_name,
                                       'text' => $text,
-                                      'recommendation' => "Try nesting this heading shallower.",
+                                      'recommendation' => "Try nesting this heading shallower."
                                     ];
                                 } else {
                                     if (isset($this->heading_level_structure[$heading_rank - 1])) {
@@ -229,7 +229,7 @@ class Checker
                                               'type' => 'heading too shallow',
                                               'tag' => $tag_name,
                                               'text' => $text,
-                                              'recommendation' => "Try nesting this heading deeper.",
+                                              'recommendation' => "Try nesting this heading deeper."
                                             ];
                                         } else {
                                             /*
@@ -257,7 +257,7 @@ class Checker
                   'type' => 'invalid heading',
                   'tag' => $tag_name,
                   'text' => $text,
-                  'recommendation' => "Use valid headings only (<h1> through <h6>).",
+                  'recommendation' => "Use valid headings only (<h1> through <h6>)."
                 ];
             }
             /*

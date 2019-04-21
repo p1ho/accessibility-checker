@@ -38,11 +38,11 @@ function hsl2rgb($h, $s, $l): array
     $s = $s / 100;
     $l = $l / 100;
 
-    $rgb = array();
+    $rgb = [];
 
     // convert to rgb
   if ($s == 0) { // achromatic
-    foreach (array('r', 'g', 'b') as $color) {
+    foreach (['r','g','b'] as $color) {
         $rgb[$color] = $l;
     }
   } else { //chromatic
@@ -52,7 +52,7 @@ function hsl2rgb($h, $s, $l): array
       $rgb['g'] = hue2rgb($p, $q, $h);
       $rgb['b'] = hue2rgb($p, $q, $h - 1 / 3);
   }
-    foreach (array('r', 'g', 'b') as $color) {
+    foreach (['r','g','b'] as $color) {
         $rgb[$color] = min(255, round($rgb[$color] * 255));
     }
     return $rgb;
