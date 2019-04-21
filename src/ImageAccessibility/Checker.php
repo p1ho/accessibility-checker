@@ -72,14 +72,14 @@ class Checker
                 $this->errors[] = (object) [
                   'type' => 'no alt',
                   'src'  => $src,
-                  'recommendation' => 'Add an alt attribute to the img and add a description'];
+                  'recommendation' => 'Add an alt attribute to the img and add a description.'];
             } else {
                 $alt = $img_node->getAttribute('alt');
                 if (trim($alt) === "") {
                     $this->warnings[] = (object) [
                       'type' => 'empty alt',
                       'src'  => $src,
-                      'recommendation' => 'If this image is integral to the content, please add a description'];
+                      'recommendation' => 'If this image is integral to the content, please add a description.'];
                 }
             }
         }
