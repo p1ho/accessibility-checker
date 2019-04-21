@@ -1,5 +1,8 @@
 # README
 
+[![Build Status](https://travis-ci.com/p1ho/accessibility-checker.svg?branch=master)](https://travis-ci.com/p1ho/accessibility-checker)
+[![Coverage Status](https://coveralls.io/repos/github/p1ho/accessibility-checker/badge.svg?branch=master)](https://coveralls.io/github/p1ho/accessibility-checker?branch=master)
+
 # Table of Content
 * [Introduction](#introduction)
 * [Installation](#installation)
