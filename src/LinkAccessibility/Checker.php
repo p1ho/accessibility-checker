@@ -115,7 +115,7 @@ class Checker
                         'type' => 'unclear pdf link',
                         'href' => $path,
                         'text' => $text,
-                        'recommendation' => 'Include the word "PDF" in the link'];
+                        'recommendation' => 'Include the word "PDF" in the link.'];
                 }
             } else {
                 if ($link_text_eval['url_is_download'] &&
