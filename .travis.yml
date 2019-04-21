@@ -12,3 +12,6 @@ script:
   - composer style-fix
   - composer test
   - composer phpcov-merge
+
+after_script:
+  - vendor/bin/php-coveralls -v
