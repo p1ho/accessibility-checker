@@ -1,12 +1,24 @@
-# Accessibility Checker for PHP
+# README
 
-This is a simple self-contained program that takes in HTML in string form and a domain name where the HTML is taken from, and will run accessibility tests on the HTML. This is not meant to be an exhaustive accessibility check, but it aims to bring severe accessibility issues to light, as well as generate awareness for accessibility in general.
+# Table of Content
+* [Introduction](#introduction)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Report Structure](#report-structure)
+  * [Color Contrast Errors](#color-contrast-errors)
+  * [Heading Structure Errors](#heading-structure-errors)
+  * [Image Accessibility Errors](#image-accessibility-errors)
+  * [Link Accessibility Errors](#link-accessibility-errors)
+* [Development](#development)
+* [Contributors](#contributors)
 
-Currently, this is being developed with the goal to analyze body texts from *Drupal Nodes*. However, algorithms used in these programs may be useful for developing a more general propose solution.
+# Introduction
 
-## What's inside
+This is a [Web Accessibility](https://en.wikipedia.org/wiki/Web_accessibility) testing suite that evaluates the HTML string extracted from Content Management Systems. This is not meant to be an exhaustive accessibility check, but it aims to bring severe accessibility issues to light, as well as generate awareness for accessibility in general.
 
-There are 4 accessibility categories being checked:
+Currently, this is being developed with the goal to analyze body texts from *Drupal Nodes*. However, algorithms used in these programs may be useful for developing a more general purpose solution.
+
+## Categories
 
 1. **Color Contrast**: Since low color contrast can cause readability issues, this program will go through all the elements in the HTML and compare its text color with the background to see if its contrast level adheres to [WCAG 2.0 standard](https://www.w3.org/TR/WCAG/#contrast-minimum). Currently, it will only analyze inline styles, and will ignore the property 'opacity' due to the complexity it entails.
 
@@ -16,39 +28,299 @@ There are 4 accessibility categories being checked:
 
 1. **Link Accessibility**: This checks 2 things: whether links are dead/unoptimized, and whether link texts are clear and descriptive. In particular, link text is also important for screen readers because usually there is an option to list all the links on a particular page; if all the links reads 'click here' or 'more detail', then it becomes impossible for the user to know whether the link is useful without actually accessing it.
 
-## How to use?
+# Installation
+
+This package is not currently published to [Packagist](https://packagist.org/), but can be included through composer by including the following lines in your `composer.json`
+
+```JavaScript
+    "require": {
+        "p1ho/accessibility-checker": "@dev",
+    }
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "link-to-this-repository"
+        }
+    ],
+```
+(Note: if you have other items in `"require"` and `"respositories"` already, just add them to the existing list)
+
+# Usage
 
 example:
-```
-$domain = "https://enter-your-url.com/";
+```PHP
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use P1ho\AccessibilityChecker\ColorContrast;
+use P1ho\AccessibilityChecker\HeadingStructure;
+use P1ho\AccessibilityChecker\ImageAccessibility;
+use P1ho\AccessibilityChecker\LinkAccessibility;
+
+// initialize accessibility checkers
+$color_contrast_checker     = new ColorContrast\Checker("AA"); // AA or AAA mode
+$heading_structure_checker  = new HeadingStructure\Checker(true); // strict mode
+$img_accessibility_checker  = new ImageAccessibility\Checker();
+$link_accessibility_checker = new LinkAccessibility\Checker();
+
 $html = "<p>Enter your html here</p>";
+$dom = new DOMDocument();
+libxml_use_internal_errors(true);
+$dom->loadHTML($html);
 
-require "accessibility-checker/AccessibilityChecker.php";
-AccessibilityChecker::init();
-AccessibilityChecker::set_domain($domain);
-AccessibilityChecker::load_html($html);
+$page_url = "url-where-page-is-taken-from"; // this is to check relative links.
 
-$color_contrast_result      = AccessibilityChecker::evaluate_color_contrast();
-$heading_structure_result   = AccessibilityChecker::evaluate_heading_structure();
-$image_accessibility_result = AccessibilityChecker::evaluate_image_accessibility();
-$link_accessibility_result  = AccessibilityChecker::evaluate_link_accessibility();
+$color_contrast_result      = $color_contrast_checker->evaluate($dom);
+$heading_structure_result   = $heading_structure_checker->evaluate($dom);
+$image_accessibility_result = $img_accessibility_checker->evaluate($dom);
+$link_accessibility_result  = $link_accessibility_checker->evaluate($dom, $page_url);
+```
+# Report Structure
+
+In general, the reporting schematics will take the following structure:
+```JavaScript
+{
+  "passed": true | false,
+  "errors": [
+    // list of objects with error details
+  ],
+  // for image accessibility checker
+  "warnings": [
+    // list of objects with warning details
+  ]
+}
 ```
 
-## Unit Tests
+## Color Contrast Errors
 
-Unit tests were written for some parts that require testing (such as checking color contrast), all the tests can be bulk-run by running the ```unit_tests.sh``` found at the root folder.
+### Invalid Style Properties
 
-## Dependencies
+| Key | Value |
+| --- | ----- |
+| **type** | one of `["invalid color", "invalid size", "invalid weight"]` |
+| **property** | one of `["background-color", "color", "font-size", "font-weight"]` |
+| **tag** | name of tag such as `h1` or `p` |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
 
-- [PHPUnit](https://phpunit.de/)
-- [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL)
+### Bad Color Contrast
 
-## UPDATE
+| Key | Value |
+| --- | ----- |
+| **type** | `"low contrast"` |
+| **property** | `"AA"` or `"AAA"` (see [WCAG 2.0 conformance levels](https://www.ucop.edu/electronic-accessibility/standards-and-best-practices/levels-of-conformance-a-aa-aaa.html)) |
+| **tag** | name of tag such as `h1` or `p` |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text_is_large** | whether the bolding level or size of text makes it a *large* font |
+| **contrast_ratio** | calculated contrast rounded to 2 decimal places (e.g. `1.23`) |
 
-- There was a performance issue with link checker because it checked links sequentially instead of in parallel. [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL) has been integrated which does both multiple curl requests in parallel and caching.
+## Heading Structure Errors
 
-- Updated error messages to object so as to allow more flexibility on the front end in terms of error display.
+### Heading Unallowed
 
-## TODO
+| Key | Value |
+| --- | ----- |
+| **type** | `"heading unallowed"` |
+| **tag** | one of heading tags (e.g. `h1`) |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Use allowed heading (<h3> to <h6>)."` |
 
-- (Debating) Image Accessibility Checker should also check if the image is dead, will implement after [Zebra_cURL](https://github.com/stefangabos/Zebra_cURL) is successfully implemented for Link Accessibility.
+### Heading inside heading
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"heading inside heading"` |
+| **tag** | one of heading tags (e.g. `h1`) |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Do not put heading inside another heading."` |
+
+### Heading Skipped
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"heading skipped"` |
+| **tag** | one of heading tags (e.g. `h1`) |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | If skipped h3, it would be `"<h3> is expected before the placement of this heading."` |
+
+### Heading too shallow
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"heading too shallow"` |
+| **tag** | one of heading tags (e.g. `h1`) |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Try nesting this heading deeper."` |
+
+### Heading too deep
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"heading too deep"` |
+| **tag** | one of heading tags (e.g. `h1`) |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Try nesting this heading shallower."` |
+
+### Heading misplaced
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"heading misplaced"` |
+| **tag** | one of heading tags (e.g. `h1`) |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Try nesting this heading shallower."` |
+
+### Invalid heading
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"invalid heading"` |
+| **tag** | one of heading tags (e.g. `h1`) |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `""Use valid headings only (<h1> through <h6>).""` |
+
+## Image Accessibility Errors
+
+### No alt text (Error)
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"no alt"` |
+| **src** | values inside `src` attribute |
+| **recommendation** | `"Add an alt attribute to the img and add a description."` |
+
+### Empty alt text (Warning)
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"empty alt"` |
+| **src** | values inside `src` attribute |
+| **recommendation** | `"If this image is integral to the content, please add a description."` |
+
+## Link Accessibility Errors
+
+### Redirect
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"redirect"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Use the final redirected link."` |
+
+### Dead
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"dead"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Find an alternative working link."` |
+
+### Domain Overlap
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"domain overlap"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Use relative URL."` |
+
+Note: This is to make sure other pages in the same domain are linked via relative paths instead of absolute paths.
+
+### Slow Connection
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"slow connection"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Troubleshoot why the page takes so long to load."` |
+
+Note: The checker uses the HEAD request to fetch meta data for a page, this should not take long; thus, if the checker times out after 5 seconds, the checker will deem the link as slow.
+
+### Poor link text
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"poor link text"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Use more descriptive and specific wording."` |
+
+Note: at least 2/3 of the words in the text are in the black list.
+
+**Black List**:
+* check
+* click
+* detail
+* details
+* download
+* go
+* here
+* info
+* information
+* learn
+* link
+* more
+* now
+* other
+* page
+* read
+* see
+* this
+* view
+* visit
+* find
+* it
+
+### Url link text
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"url link text"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Use real words that describe the link."` |
+
+### Text too long
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"text too long"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Shorten the link text."` |
+
+Note: The current limit is 100 characters.
+
+### Unclear PDF link
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"unclear pdf link"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Include the word "PDF" in the link"` |
+
+### Unclear download link
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"unclear download link"` |
+| **href** | value inside `href` attribute |
+| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **recommendation** | `"Include the word "download" in the link."` |
+
+# Development
+
+* `$ composer install` to install all dependencies
+
+* `$ composer test` will run all the tests (use `$ composer test-win` on Windows). To enable coverage analysis, a code coverage driver is needed. I used [Xdebug](https://xdebug.org/index.php) when developing on Windows. Afterwards, run `$ composer phpcov-merge` (use `$ composer phpcov-merge-win` on Windows) to merge `build/cov/coverage.cov` with `build/logs/clover.xml` as instructed on [php-coveralls doc](https://packagist.org/packages/php-coveralls/php-coveralls).
+
+* Run `$ composer style-fix-download` to download the latest php-cs-fixer file to project directory. Afterwards, you can run `$ composer style-fix` to auto style fix all your code.
+
+# Contributors
+|[![](https://github.com/p1ho.png?size=50)](https://github.com/p1ho)|
+|:---:|
+|[p1ho](https://github.com/p1ho)|
