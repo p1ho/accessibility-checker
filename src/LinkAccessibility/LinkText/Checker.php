@@ -201,7 +201,7 @@ class Checker
 
         // make HEAD request to get Headers
         $curl = new \Zebra_cURL();
-        $curl->cache(__DIR__. '\..\..\..\cache/', self::$cache_time);
+        $curl->cache(__DIR__. '/../../../cache/', self::$cache_time);
         $curl->header($link_path, function ($result) {
             self::$result = $result;
         });
