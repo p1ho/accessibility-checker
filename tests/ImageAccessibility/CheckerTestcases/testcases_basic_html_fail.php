@@ -14,7 +14,7 @@ $testcases_basic_html_fail = array(
         (object) [
           'type' => 'no alt',
           'src' => '/some/source.jpg',
-          'recommendation' => 'Add an alt attribute to the img and add a description',
+          'recommendation' => 'Add an alt attribute to the img and add a description.',
         ],
       ),'warnings'=>array())
   ),
@@ -27,7 +27,7 @@ $testcases_basic_html_fail = array(
       (object) [
         'type' => 'empty alt',
         'src' => '/some/source.jpg',
-        'recommendation' => 'If this image is integral to the content, please add a description',
+        'recommendation' => 'If this image is integral to the content, please add a description.',
       ],
     ))
   ),
@@ -45,23 +45,23 @@ $testcases_basic_html_fail = array(
         (object) [
           'type' => 'no alt',
           'src' => '/some/source3.jpg',
-          'recommendation' => 'Add an alt attribute to the img and add a description',
+          'recommendation' => 'Add an alt attribute to the img and add a description.',
         ],
         (object) [
           'type' => 'no alt',
           'src' => '/some/source5.jpg',
-          'recommendation' => 'Add an alt attribute to the img and add a description',
+          'recommendation' => 'Add an alt attribute to the img and add a description.',
         ],
       ),'warnings'=>array(
         (object) [
           'type' => 'empty alt',
           'src' => '/some/source2.jpg',
-          'recommendation' => 'If this image is integral to the content, please add a description',
+          'recommendation' => 'If this image is integral to the content, please add a description.',
         ],
         (object) [
           'type' => 'empty alt',
           'src' => '/some/source4.jpg',
-          'recommendation' => 'If this image is integral to the content, please add a description',
+          'recommendation' => 'If this image is integral to the content, please add a description.',
         ],
       ))
   ),
