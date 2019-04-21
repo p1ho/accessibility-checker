@@ -60,29 +60,29 @@ class Checker
             if ($link_quality_eval['is_redirect']) {
                 $errors[] = (object) [
                     'type' => 'redirect',
-                    'path' => $path,
-                    'link_text' => $text,
+                    'href' => $path,
+                    'text' => $text,
                     'recommendation' => 'Use the final redirected link.'];
             }
             if ($link_quality_eval['is_dead']) {
                 $errors[] = (object) [
                     'type' => 'dead',
-                    'path' => $path,
-                    'link_text' => $text,
+                    'href' => $path,
+                    'text' => $text,
                     'recommendation' => 'Find an alternative working link.'];
             }
             if ($link_quality_eval['is_same_domain']) {
                 $errors[] = (object) [
                     'type' => 'domain overlap',
-                    'path' => $path,
-                    'link_text' => $text,
+                    'href' => $path,
+                    'text' => $text,
                     'recommendation' => 'Use relative URL.'];
             }
             if ($link_quality_eval['timedout']) {
                 $errors[] = (object) [
                     'type' => 'slow connection',
-                    'path' => $path,
-                    'link_text' => $text,
+                    'href' => $path,
+                    'text' => $text,
                     'recommendation' => 'Troubleshoot why the page takes so long to load.'];
             }
 
@@ -91,30 +91,30 @@ class Checker
             if (!$link_text_eval['passed_blacklist_words']) {
                 $errors[] = (object) [
                     'type' => 'poor link text',
-                    'path' => $path,
-                    'link_text' => $text,
+                    'href' => $path,
+                    'text' => $text,
                     'recommendation' => 'Use more descriptive and specific wording.'];
             }
             if (!$link_text_eval['passed_text_not_url']) {
                 $errors[] = (object) [
                     'type' => 'url link text',
-                    'path' => $path,
-                    'link_text' => $text,
+                    'href' => $path,
+                    'text' => $text,
                     'recommendation' => 'Use real words that describe the link.'];
             }
             if (!$link_text_eval['passed_text_length']) {
                 $errors[] = (object) [
                     'type' => 'text too long',
-                    'path' => $path,
-                    'link_text' => $text,
+                    'href' => $path,
+                    'text' => $text,
                     'recommendation' => 'Shorten the link text.'];
             }
             if ($link_text_eval['url_is_pdf']) {
                 if (!$link_text_eval['text_has_pdf']) {
                     $errors[] = (object) [
                         'type' => 'unclear pdf link',
-                        'path' => $path,
-                        'link_text' => $text,
+                        'href' => $path,
+                        'text' => $text,
                         'recommendation' => 'Include the word "PDF" in the link'];
                 }
             } else {
@@ -122,8 +122,8 @@ class Checker
                     $link_text_eval['text_has_download']) {
                     $errors[] = (object) [
                         'type' => 'unclear download link',
-                        'path' => $path,
-                        'link_text' => $text,
+                        'href' => $path,
+                        'text' => $text,
                         'recommendation' => 'Include the word "download" in the link.'];
                 }
             }
