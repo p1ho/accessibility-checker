@@ -44,6 +44,7 @@
             "src/ColorContrast/Calculator.php",
             "src/HeadingStructure/Checker.php",
             "src/ImageAccessibility/Checker.php",
+            "src/LinkAccessibility/Base.php",
             "src/LinkAccessibility/Checker.php",
             "src/LinkAccessibility/LinkQuality/Checker.php",
             "src/LinkAccessibility/LinkText/Checker.php",

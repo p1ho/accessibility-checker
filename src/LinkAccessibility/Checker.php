@@ -15,7 +15,7 @@ namespace P1ho\AccessibilityChecker\LinkAccessibility;
  *
  */
 
-class Checker
+class Checker extends Base
 {
 
     /**
@@ -50,6 +50,8 @@ class Checker
      */
     private function _eval_links(array $link_nodes, string $page_url): array
     {
+        self::_prefetch($link_nodes, $page_url);
+
         $errors = [];
         foreach ($link_nodes as $link_node) {
             $text = $this->_get_text_content($link_node);
@@ -129,6 +131,33 @@ class Checker
             }
         }
         return $errors;
+    }
+
+    /**
+     * _prefetch function.
+     * Prefetch all the URL so they are in cache.
+     *
+     * @param  array  $link_nodes [list of DOMElement Object with that is <a>]
+     * @param  string $page_url   [a page url, MUST include protocol]
+     * @return void
+     */
+    private static function _prefetch(array $link_nodes, string $page_url): array
+    {
+        $link_urls = array_map(function ($x) {
+            return $x->getAttribute('href');
+        }, $link_nodes);
+        $site_url  = static::get_site_url($page_url);
+        $page_path = str_replace($site_url, "", $page_url);
+
+        $filtered_paths = array();
+        foreach ($link_urls as $link_url) {
+            if (!preg_match("/^(#|tel:|mailto:){1}/", $link_url)) {
+                $filter_paths[] = static::compute_link_url($link_url, $page_path, $site_url);
+            }
+        }
+        self::$curl->header($filtered_paths, function ($x) {
+            return;
+        });
     }
 
     /**
