@@ -142,7 +142,7 @@ class Checker extends Base
      * @param  string $page_url   [a page url, MUST include protocol]
      * @return void
      */
-    private static function _prefetch(array $link_nodes, string $page_url): array
+    private static function _prefetch(array $link_nodes, string $page_url): void
     {
         $link_urls = array_map(function ($x) {
             return $x->getAttribute('href');
