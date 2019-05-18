@@ -9,11 +9,11 @@ namespace P1ho\AccessibilityChecker\LinkAccessibility;
 abstract class Base
 {
 
-      /**
-       * get_site_url function
-       * @param  string $page_url [a page url, MUST include protocol]
-       * @return string           [the site/home url]
-       */
+    /**
+     * get_site_url function
+     * @param  string $page_url [a page url, MUST include protocol]
+     * @return string           [the site/home url]
+     */
     public static function get_site_url(string $page_url): string
     {
         $url_no_protocol = substr($page_url, 8);

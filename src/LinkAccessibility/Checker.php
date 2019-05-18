@@ -17,6 +17,7 @@ namespace P1ho\AccessibilityChecker\LinkAccessibility;
 
 class Checker extends Base
 {
+    private static $cache_time = 86400;
 
     /**
      * evaluate function
@@ -155,7 +156,16 @@ class Checker extends Base
                 $filter_paths[] = static::compute_link_url($link_url, $page_path, $site_url);
             }
         }
-        self::$curl->header($filtered_paths, function ($x) {
+
+        $curl = new \Zebra_cURL();
+        $curl->cache(__DIR__. '/../../cache/', self::$cache_time);
+        // HEAD requests should NOT take long to return results, will terminate
+        // after 5 seconds.
+        $curl->option([
+          CURLOPT_TIMEOUT => 5,
+          CURLOPT_CONNECTTIMEOUT => 5
+        ]);
+        $curl->header($filtered_paths, function ($x) {
             return;
         });
     }
