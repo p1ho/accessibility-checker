@@ -469,11 +469,11 @@ class Checker
      * @param  array|string $parent_font_color
      * [parent's rendered font color. Could be different from parent's true value
      * if parent had transparent color]
-     * @param  int     $font_size      [parent's font size]
+     * @param  int|float $font_size      [parent's font size]
      * @param  bool    $parent_is_bold [whether the parent font was bold]
      * @return array  [array containing color and font style info]
      */
-    private function _get_style_properties(string $style_str, string $tag_name, $parent_bg_color, $parent_font_color, int $parent_font_size, bool $parent_is_bold): array
+    private function _get_style_properties(string $style_str, string $tag_name, $parent_bg_color, $parent_font_color, $parent_font_size, bool $parent_is_bold): array
     {
 
         // parse style string
