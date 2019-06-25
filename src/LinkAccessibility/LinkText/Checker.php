@@ -203,7 +203,7 @@ class Checker extends Base
 
         // make HEAD request to get Headers
         $curl = new \Zebra_cURL();
-        $curl->cache(__DIR__. '/../../../cache/', self::$cache_time);
+        $curl->cache(__DIR__. '/../../../cache/', self::$cache_time, true, 0777);
         $curl->header($link_path, function ($result) {
             self::$result = $result;
         });
@@ -285,7 +285,7 @@ class Checker extends Base
 
         // make HEAD request to get Headers
         $curl = new \Zebra_cURL();
-        $curl->cache(__DIR__. '/../../../cache/', self::$cache_time);
+        $curl->cache(__DIR__. '/../../../cache/', self::$cache_time, true, 0777);
         $curl->header($link_path, function ($result) {
             self::$result = $result;
         });
