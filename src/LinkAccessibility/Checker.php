@@ -30,7 +30,11 @@ class Checker extends Base
         $link_nodes_obj = $dom->getElementsByTagName('a');
         $link_nodes = array();
         for ($i = 0; $i < $link_nodes_obj->length; $i++) {
-            $link_nodes[] = $link_nodes_obj[$i];
+            // remove placeholder links from checks
+            // https://stackoverflow.com/questions/5292343/is-an-anchor-tag-without-the-href-attribute-safe
+            if ($link_nodes_obj[$i]->getAttribute('href') !== '') {
+                  $link_nodes[] = $link_nodes_obj[$i];
+            }
         }
 
         // create array to be returned

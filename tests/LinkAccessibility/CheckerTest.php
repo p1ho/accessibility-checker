@@ -19,4 +19,27 @@ final class CheckerTest extends TestCase
         }
         $this->assertFalse($hasError);
     }
+
+    public function testIgnorePlaceholderLink(): void
+    {
+        $checker = new Checker();
+        $testcase = new \testcase('<a>Link without href</a>', [
+          'passed' => 1,
+          'errors' => []
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom, "https://www.google.com"),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+    }
+
+    private function getDOM($s)
+    {
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($s);
+        return $dom;
+    }
 }
