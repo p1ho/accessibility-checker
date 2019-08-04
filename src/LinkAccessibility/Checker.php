@@ -85,7 +85,7 @@ class Checker extends Base
                     'text' => $text,
                     'recommendation' => 'Use relative URL.'];
             }
-            if ($link_quality_eval['timedout']) {
+            if ($link_quality_eval['timed_out']) {
                 $errors[] = (object) [
                     'type' => 'slow connection',
                     'href' => $path,
