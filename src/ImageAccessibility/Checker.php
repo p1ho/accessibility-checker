@@ -67,11 +67,13 @@ class Checker
     {
         foreach ($img_nodes as $img_node) {
             $src = $img_node->getAttribute('src');
-
+            $html = $this->_get_outerHTML($img_node);
+            
             if (!$img_node->hasAttribute('alt')) {
                 $this->errors[] = (object) [
                   'type' => 'no alt',
                   'src'  => $src,
+                  'html' => $html,
                   'recommendation' => 'Add an alt attribute to the img and add a description.'];
             } else {
                 $alt = $img_node->getAttribute('alt');
@@ -79,9 +81,23 @@ class Checker
                     $this->warnings[] = (object) [
                       'type' => 'empty alt',
                       'src'  => $src,
+                      'html' => $html,
                       'recommendation' => 'If this image is integral to the content, please add a description.'];
                 }
             }
         }
+    }
+    
+    /**
+     * _get_outerHTML helper.
+     * Consulted https://stackoverflow.com/questions/5404941/how-to-return-outer-html-of-domdocument
+     * @param  DOMElement $dom_el
+     * @return string
+     */
+    private function _get_outerHTML(\DOMElement $dom_el): string
+    {
+        $doc = new \DOMDocument();
+        $doc->appendChild($doc->importNode($dom_el, true));
+        return trim(str_replace(["\r"], '', $doc->saveHTML()));
     }
 }
