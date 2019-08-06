@@ -29,7 +29,7 @@ Currently, this is being developed with the goal to analyze body texts from *Dru
 
 1. **Image Accessibility**: We have to assume that people using the screen readers cannot see anything on the page (only hear it), and this includes pictures. Thus, images that are integral to the content must also contain a description in its 'alt' attribute. This program will raise errors for ```<img>``` that do not have alt attributes and will raise warnings for ```<img>``` that has an empty alt attribute (because it is possible for a picture to be there simply for aesthetics).
 
-1. **Link Accessibility**: This checks 2 things: whether links are dead/unoptimized, and whether link texts are clear and descriptive. In particular, link text is also important for screen readers because usually there is an option to list all the links on a particular page; if all the links reads 'click here' or 'more detail', then it becomes impossible for the user to know whether the link is useful without actually accessing it.
+1. **Link Accessibility**: This checks 2 things: whether links are dead/unoptimized, and whether link texts are clear and descriptive. In particular, link text is also important for screen readers because usually there is an option to list all the links on a particular page; if all the links reads ***click here*** or ***more detail***, then it becomes impossible for the user to know whether the link is useful without actually accessing it.
 
 # Installation
 
@@ -63,7 +63,7 @@ use P1ho\AccessibilityChecker\LinkAccessibility;
 
 // initialize accessibility checkers
 $color_contrast_checker     = new ColorContrast\Checker("AA"); // AA or AAA mode
-$heading_structure_checker  = new HeadingStructure\Checker(true); // strict mode
+$heading_structure_checker  = new HeadingStructure\Checker(1, true); // heading shift(1-5) and strict mode
 $img_accessibility_checker  = new ImageAccessibility\Checker();
 $link_accessibility_checker = new LinkAccessibility\Checker();
 
@@ -104,7 +104,9 @@ In general, the reporting schematics will take the following structure:
 | **type** | one of `["invalid color", "invalid size", "invalid weight"]` |
 | **property** | one of `["background-color", "color", "font-size", "font-weight"]` |
 | **tag** | name of tag such as `h1` or `p` |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
+| **recommendation** | `"Fix the invalid <insert-property>."` |
 
 ### Bad Color Contrast
 
@@ -113,9 +115,11 @@ In general, the reporting schematics will take the following structure:
 | **type** | `"low contrast"` |
 | **property** | `"AA"` or `"AAA"` (see [WCAG 2.0 conformance levels](https://www.ucop.edu/electronic-accessibility/standards-and-best-practices/levels-of-conformance-a-aa-aaa.html)) |
 | **tag** | name of tag such as `h1` or `p` |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **text_is_large** | whether the bolding level or size of text makes it a *large* font |
 | **contrast_ratio** | calculated contrast rounded to 2 decimal places (e.g. `1.23`) |
+| **recommendation** | `"Contrast Ratio for this element must be at least <insert-value>"` |
 
 ## Heading Structure Errors
 
@@ -125,16 +129,18 @@ In general, the reporting schematics will take the following structure:
 | --- | ----- |
 | **type** | `"heading unallowed"` |
 | **tag** | one of heading tags (e.g. `h1`) |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
-| **recommendation** | `"Use allowed heading (<h3> to <h6>)."` |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
+| **recommendation** | `"Check and use only allowed headings (<insert-list-of-allowed-headings>)."` |
 
-### Heading inside heading
+### Heading Inside Heading
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"heading inside heading"` |
 | **tag** | one of heading tags (e.g. `h1`) |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Do not put heading inside another heading."` |
 
 ### Heading Skipped
@@ -143,61 +149,68 @@ In general, the reporting schematics will take the following structure:
 | --- | ----- |
 | **type** | `"heading skipped"` |
 | **tag** | one of heading tags (e.g. `h1`) |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | If skipped h3, it would be `"<h3> is expected before the placement of this heading."` |
 
-### Heading too shallow
+### Heading Too Shallow
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"heading too shallow"` |
 | **tag** | one of heading tags (e.g. `h1`) |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Try nesting this heading deeper."` |
 
-### Heading too deep
+### Heading Too Deep
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"heading too deep"` |
 | **tag** | one of heading tags (e.g. `h1`) |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Try nesting this heading shallower."` |
 
-### Heading misplaced
+### Heading Misplaced
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"heading misplaced"` |
 | **tag** | one of heading tags (e.g. `h1`) |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Try nesting this heading shallower."` |
 
-### Invalid heading
+### Invalid Heading
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"invalid heading"` |
 | **tag** | one of heading tags (e.g. `h1`) |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
-| **recommendation** | `""Use valid headings only (<h1> through <h6>).""` |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
+| **recommendation** | `"Use valid headings only (<h1> through <h6>).` |
 
 ## Image Accessibility Errors
 
-### No alt text (Error)
+### No Alt Text (Error)
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"no alt"` |
 | **src** | values inside `src` attribute |
+| **html** | raw html of the tag |
 | **recommendation** | `"Add an alt attribute to the img and add a description."` |
 
-### Empty alt text (Warning)
+### Empty Alt Text (Warning)
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"empty alt"` |
 | **src** | values inside `src` attribute |
+| **html** | raw html of the tag |
 | **recommendation** | `"If this image is integral to the content, please add a description."` |
 
 ## Link Accessibility Errors
@@ -208,7 +221,8 @@ In general, the reporting schematics will take the following structure:
 | --- | ----- |
 | **type** | `"redirect"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Use the final redirected link."` |
 
 ### Dead
@@ -217,7 +231,8 @@ In general, the reporting schematics will take the following structure:
 | --- | ----- |
 | **type** | `"dead"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Find an alternative working link."` |
 
 ### Domain Overlap
@@ -226,7 +241,8 @@ In general, the reporting schematics will take the following structure:
 | --- | ----- |
 | **type** | `"domain overlap"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Use relative URL."` |
 
 Note: This is to make sure other pages in the same domain are linked via relative paths instead of absolute paths.
@@ -237,18 +253,20 @@ Note: This is to make sure other pages in the same domain are linked via relativ
 | --- | ----- |
 | **type** | `"slow connection"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Troubleshoot why the page takes so long to load."` |
 
 Note: The checker uses the HEAD request to fetch meta data for a page, this should not take long; thus, if the checker times out after 5 seconds, the checker will deem the link as slow.
 
-### Poor link text
+### Poor Link Text
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"poor link text"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Use more descriptive and specific wording."` |
 
 Note: at least 2/3 of the words in the text are in the black list.
@@ -259,10 +277,12 @@ Note: at least 2/3 of the words in the text are in the black list.
 * detail
 * details
 * download
+* find
 * go
 * here
 * info
 * information
+* it
 * learn
 * link
 * more
@@ -274,45 +294,47 @@ Note: at least 2/3 of the words in the text are in the black list.
 * this
 * view
 * visit
-* find
-* it
 
-### Url link text
+### Url Link Text
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"url link text"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Use real words that describe the link."` |
 
-### Text too long
+### Text Too Long
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"text too long"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Shorten the link text."` |
 
 Note: The current limit is 100 characters.
 
-### Unclear PDF link
+### Unclear PDF Link
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"unclear pdf link"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Include the word "PDF" in the link"` |
 
-### Unclear download link
+### Unclear Download Link
 
 | Key | Value |
 | --- | ----- |
 | **type** | `"unclear download link"` |
 | **href** | value inside `href` attribute |
-| **text** | text in side the tag, child element will be abbreviated (e.g. `<span>...</span>`) |
+| **text** | text inside the tag (also texts from nested tags) |
+| **html** | raw html of the tag |
 | **recommendation** | `"Include the word "download" in the link."` |
 
 # Development
