@@ -179,7 +179,7 @@ final class CheckerTest extends TestCase
               'tag' => 'h6',
               'text' => 'Normal h6',
               'html' => $html,
-              'recommendation' => 'Check and use only allowed headings.'
+              'recommendation' => 'Check and use only allowed headings (no headings are allowed).'
             ]
           ]
         ]);
@@ -201,7 +201,7 @@ final class CheckerTest extends TestCase
               'tag' => 'h6',
               'text' => 'Normal h6',
               'html' => $html,
-              'recommendation' => 'Check and use only allowed headings.'
+              'recommendation' => 'Check and use only allowed headings (no headings are allowed).'
             ]
           ]
         ]);

@@ -53,7 +53,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'h1',
         'text' => 'Unallowed h1',
         'html' => '<h1>Unallowed h1</h1>',
-        'recommendation' => 'Check and use only allowed headings.',
+        'recommendation' => 'Check and use only allowed headings (<h3>, <h4>, <h5>, <h6>).',
       ],
     ))
   ),

@@ -136,13 +136,21 @@ class Checker
         // if element is heading
         if ($this->_is_heading_tag($tag_name)) {
             $heading_rank = (int) $tag_name[1];
-            if (!in_array($heading_rank, array_slice([1,2,3,4,5,6], $this->heading_shift))) {
+            $allowed_headings = array_slice([1,2,3,4,5,6], $this->heading_shift);
+            if (!in_array($heading_rank, $allowed_headings)) {
+                if (count($allowed_headings) > 0) {
+                  $allowed_headings_text = implode(', ', array_map(function ($x) {
+                    return "<h$x>";
+                  }, $allowed_headings));
+                } else {
+                  $allowed_headings_text = "no headings are allowed";
+                }
                 $this->errors[] = (object) [
                   'type' => 'heading unallowed',
                   'tag' => $tag_name,
                   'text' => $text,
                   'html' => $html,
-                  'recommendation' => 'Check and use only allowed headings.'
+                  'recommendation' => "Check and use only allowed headings ($allowed_headings_text)."
                 ];
             } else {
                 /*
