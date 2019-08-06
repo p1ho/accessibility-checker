@@ -170,7 +170,8 @@ class Checker
             return;
         }
 
-        $text = $this->_get_text_content($dom_el);
+        $text = trim($this->_get_text_content($dom_el));
+        $html = $this->_get_outerHTML($dom_el);
 
         $root_size         = 12; // assumes root font size is 12 pt to begin with
         $parent_bg_color   = $bg_color;
@@ -263,7 +264,8 @@ class Checker
                       'type' => 'invalid color',
                       'property' => 'background-color',
                       'tag' => $tag_name,
-                      'text' => $text
+                      'text' => $text,
+                      'html' => $html,
                     ];
                 }
             }
@@ -276,7 +278,8 @@ class Checker
                       'type' => 'invalid color',
                       'property' => 'color',
                       'tag' => $tag_name,
-                      'text' => $text
+                      'text' => $text,
+                      'html' => $html,
                     ];
                 }
             }
@@ -289,7 +292,8 @@ class Checker
                       'type' => 'invalid size',
                       'property' => 'font-size',
                       'tag' => $tag_name,
-                      'text' => $text
+                      'text' => $text,
+                      'html' => $html,
                     ];
                 }
             }
@@ -302,7 +306,8 @@ class Checker
                       'type' => 'invalid weight',
                       'property' => 'font-weight',
                       'tag' => $tag_name,
-                      'text' => $text
+                      'text' => $text,
+                      'html' => $html,
                     ];
                 }
             }
@@ -340,6 +345,7 @@ class Checker
                       'mode' => 'AA',
                       'tag' => $tag_name,
                       'text' => $text,
+                      'html' => $html,
                       'text_is_large' => true,
                       'contrast_ratio' => $contrast_ratio
                     ];
@@ -351,6 +357,7 @@ class Checker
                       'mode' => 'AA',
                       'tag' => $tag_name,
                       'text' => $text,
+                      'html' => $html,
                       'text_is_large' => false,
                       'contrast_ratio' => $contrast_ratio
                     ];
@@ -364,6 +371,7 @@ class Checker
                       'mode' => 'AAA',
                       'tag' => $tag_name,
                       'text' => $text,
+                      'html' => $html,
                       'text_is_large' => true,
                       'contrast_ratio' => $contrast_ratio
                     ];
@@ -375,6 +383,7 @@ class Checker
                       'mode' => 'AA',
                       'tag' => $tag_name,
                       'text' => $text,
+                      'html' => $html,
                       'text_is_large' => false,
                       'contrast_ratio' => $contrast_ratio
                     ];
@@ -419,40 +428,65 @@ class Checker
 
     /**
      * _get_text_content helper.
-     * Gets text content that are not wrapped in any other tags.
-     * If it encounters another child tag, it will replace its content with '<tag>...</tag>'.
-     * If it encounters <br>, it will replace it with ' '.
      *
      * Example:
-     * <div>
-     *   This is
-     *   <div>I'm wrapped</div>
-     *   some text
-     * </div>
+     * <div>This is <div>I'm wrapped</div> some text</div>
      *
-     * Running this function over the node would return 'This is <div>...</div> some text'.
+     * Running this function would return "This is  I'm wrapped  some text"
      *
      * @param  DOMElement $dom_el
      * @return string
      */
-    private function _get_text_content($dom_el): string
+    private function _get_text_content(\DOMElement $dom_el): string
     {
         $text = '';
         foreach ($dom_el->childNodes as $childNode) {
-            if (get_class($childNode) === 'DOMText') {
-                $text .= htmlspecialchars_decode(trim($childNode->wholeText));
-            } elseif (get_class($childNode) === 'DOMComment') {
+            if (get_class($childNode) === 'DOMComment') {
                 continue;
             } else {
-                if ($childNode->tagName == 'br') {
-                    $text .= ' ';
+                if (get_class($childNode) === 'DOMText') {
+                    $text_raw = htmlspecialchars_decode($childNode->wholeText);
+                    $text_to_add = trim($text_raw);
+                    if ($text_to_add === '') {
+                        if (strlen($text_raw) !== 0) {
+                            $text .= ' ';
+                        }
+                        continue;
+                    }
+                    $add_space_pre = preg_match("/^[\s\t\r\n]/", $text_raw);
+                    $add_space_post = preg_match("/[\s\t\r\n]$/", $text_raw);
+                    if ($add_space_pre) {
+                        $text_to_add = ' ' . $text_to_add;
+                    }
+                    if ($add_space_post) {
+                        $text_to_add .= ' ';
+                    }
                 } else {
-                    $tag = $childNode->tagName;
-                    $text .= "<$tag>...</$tag>";
+                    $text_to_add = $this->_get_text_content($childNode);
                 }
+                if (property_exists($childNode, 'tagName')) {
+                    if ($text_to_add !== '' && in_array(strtolower($childNode->tagName), $this->block_elements)) {
+                        $text .= ' ' . $text_to_add . ' ';
+                        continue;
+                    }
+                }
+                $text .= $text_to_add;
             }
         }
-        return str_replace(["\r", "\n"], '', $text);
+        return str_replace(["\r", "\n", "\t"], '', $text);
+    }
+    
+    /**
+     * _get_outerHTML helper.
+     * Consulted https://stackoverflow.com/questions/5404941/how-to-return-outer-html-of-domdocument
+     * @param  DOMElement $dom_el
+     * @return string
+     */
+    private function _get_outerHTML(\DOMElement $dom_el): string
+    {
+        $doc = new \DOMDocument();
+        $doc->appendChild($doc->importNode($dom_el, true));
+        return trim(str_replace(["\r"], '', $doc->saveHTML()));
     }
 
     /**
@@ -469,7 +503,7 @@ class Checker
      * @param  array|string $parent_font_color
      * [parent's rendered font color. Could be different from parent's true value
      * if parent had transparent color]
-     * @param  int|float $font_size      [parent's font size]
+     * @param  int|float $font_size    [parent's font size]
      * @param  bool    $parent_is_bold [whether the parent font was bold]
      * @return array  [array containing color and font style info]
      */

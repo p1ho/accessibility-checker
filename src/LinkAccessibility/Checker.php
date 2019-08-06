@@ -33,7 +33,7 @@ class Checker extends Base
             // remove placeholder links from checks
             // https://stackoverflow.com/questions/5292343/is-an-anchor-tag-without-the-href-attribute-safe
             if ($link_nodes_obj[$i]->getAttribute('href') !== '') {
-                  $link_nodes[] = $link_nodes_obj[$i];
+                $link_nodes[] = $link_nodes_obj[$i];
             }
         }
 
