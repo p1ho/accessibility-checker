@@ -7,12 +7,18 @@ require_once __DIR__ . "/../testcase.php";
 use PHPUnit\Framework\TestCase;
 use P1ho\AccessibilityChecker\HeadingStructure\Checker;
 
+/*
+Note: There was an original assumption where headings should start at <h3>,
+so all the test cases written so far conforms to that.
+This is why the checker instantiation all use "new Checker(2, true);"
+ */
+
 final class CheckerTest extends TestCase
 {
     public function testBasicHTMLPass(): void
     {
         require "CheckerTestcases/testcases_basic_html_pass.php";
-        $checker = new Checker(true);
+        $checker = new Checker(2, true);
         foreach ($testcases_basic_html_pass as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals($testcase->expected_output, $checker->evaluate($dom));
@@ -22,7 +28,7 @@ final class CheckerTest extends TestCase
     public function testBasicHTMLFail(): void
     {
         require "CheckerTestcases/testcases_basic_html_fail.php";
-        $checker = new Checker(true);
+        $checker = new Checker(2, true);
         foreach ($testcases_basic_html_fail as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals($testcase->expected_output, $checker->evaluate($dom));
@@ -32,7 +38,7 @@ final class CheckerTest extends TestCase
     public function testBasicHTMLPassNonStrict(): void
     {
         require "CheckerTestcases/testcases_basic_html_pass_nonstrict.php";
-        $checker = new Checker(false);
+        $checker = new Checker(2, false);
         foreach ($testcases_basic_html_pass_nonstrict as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals($testcase->expected_output, $checker->evaluate($dom));
@@ -42,11 +48,169 @@ final class CheckerTest extends TestCase
     public function testBasicHTMLFailStrict(): void
     {
         require "CheckerTestcases/testcases_basic_html_fail_strict.php";
-        $checker = new Checker(true);
+        $checker = new Checker(2, true);
         foreach ($testcases_basic_html_fail_strict as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals($testcase->expected_output, $checker->evaluate($dom));
         }
+    }
+
+    public function testHeadingShift(): void
+    {
+        // heading shift should override 0 and default to 1
+        $checker = new Checker(0, true);
+        $html = "<h2>Normal h2</h2>";
+        $testcase = new \testcase($html, [
+          'passed' => true,
+          'errors' => []
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        $checker = new Checker(1, false);
+        $html = "<h3>Normal h3</h3>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'heading skipped',
+              'tag' => 'h3',
+              'text' => 'Normal h3',
+              'html' => $html,
+              'recommendation' => "<h2> is expected before the placement of this heading.",
+            ]
+          ]
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        $checker = new Checker(2, false);
+        $html = "<h4>Normal h4</h4>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'heading skipped',
+              'tag' => 'h4',
+              'text' => 'Normal h4',
+              'html' => $html,
+              'recommendation' => "<h3> is expected before the placement of this heading.",
+            ]
+          ]
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        $checker = new Checker(3, false);
+        $html = "<h5>Normal h5</h5>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'heading skipped',
+              'tag' => 'h5',
+              'text' => 'Normal h5',
+              'html' => $html,
+              'recommendation' => "<h4> is expected before the placement of this heading.",
+            ]
+          ]
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        $checker = new Checker(4, false);
+        $html = "<h6>Normal h6</h6>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'heading skipped',
+              'tag' => 'h6',
+              'text' => 'Normal h6',
+              'html' => $html,
+              'recommendation' => "<h5> is expected before the placement of this heading.",
+            ]
+          ]
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        $checker = new Checker(5, false);
+        $html = "<h6>Normal h6</h6>";
+        $testcase = new \testcase($html, [
+          'passed' => true,
+          'errors' => []
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        // no headings are allowed
+        $checker = new Checker(6, false);
+        $html = "<h6>Normal h6</h6>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'heading unallowed',
+              'tag' => 'h6',
+              'text' => 'Normal h6',
+              'html' => $html,
+              'recommendation' => 'Check and use only allowed headings.'
+            ]
+          ]
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        // should work even if heading shift is out of bound
+        $checker = new Checker(7, false);
+        $html = "<h6>Normal h6</h6>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'heading unallowed',
+              'tag' => 'h6',
+              'text' => 'Normal h6',
+              'html' => $html,
+              'recommendation' => 'Check and use only allowed headings.'
+            ]
+          ]
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
     }
 
     private function getDOM($s)

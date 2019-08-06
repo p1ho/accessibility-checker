@@ -37,6 +37,9 @@ class Checker
     // Keeps track of errors
     private $errors;
 
+    // Heading Shift (User provided, See __construct())
+    private $heading_shift;
+
     // Keeps track of how deep headings are nested in the structure
     private $heading_level_structure;
 
@@ -51,23 +54,31 @@ class Checker
 
     /**
      * __construct function
+     * @param int  $heading_shift (1 - 5; corresponds to h2 - h6)
+     * [Number of heading levels to shift. For example, if 1 is given, we shift
+     * heading level by 1, meaning the first heading we expect is h2]
      * @param bool $is_strict
      * [whether we allow different headings to exist at the same nesting level]
      */
-    public function __construct(bool $is_strict = true)
+    public function __construct(int $heading_shift = 1, bool $is_strict = false)
     {
         require __DIR__ . "/../FontHelpers/block_elements.php";
         $this->block_elements = $block_elements;
+        if ($heading_shift < 1) {
+            $this->heading_shift = 1;
+        } elseif ($heading_shift > 6) {
+            $this->heading_shift = 6;
+        } else {
+            $this->heading_shift = $heading_shift;
+        }
         $this->is_strict = $is_strict;
     }
 
     /**
      * Check if heading structure is well formed
-     * Will assume heading tag starts at <h3>
-     * (because our site's current default has h1 as Org title, and h2 as Page title)
      *
      * Checks include:
-     * - starts at <h3>, ends at <h6>
+     * - starts at user defined heading (default: <h2>), ends at <h6>
      * - no heading rank skipped (e.g., from <h3> directly to <h5>)
      * - higher ranked headings are not nested deeper than lower ranked heading
      *    (e.g., no <h3> nested deeper than <h4>)
@@ -81,8 +92,8 @@ class Checker
     public function evaluate(\DOMDocument $dom): array
     {
         $this->errors = [];
-        $this->heading_level_structure = [2 => 0]; //sets a baseline
-        $this->heading_order = [1,2];  //assume h1 and h2 have been defined
+        $this->heading_level_structure = [$this->heading_shift => 0];
+        $this->heading_order = array_slice([1,2,3,4,5,6], 0, $this->heading_shift);
 
         if (count($dom->getElementsByTagName('body')) > 0) {
             $body = $dom->getElementsByTagName('body')[0];
@@ -95,7 +106,7 @@ class Checker
             $eval_array['passed'] = true;
             $eval_array['errors'] = [];
         } else {
-            $this->_eval_DOM($body, 3, 1, false);
+            $this->_eval_DOM($body, $this->heading_shift + 1, 1, false);
             $eval_array['passed'] = (count($this->errors) === 0);
             $eval_array['errors'] = $this->errors;
         }
@@ -125,13 +136,13 @@ class Checker
         // if element is heading
         if ($this->_is_heading_tag($tag_name)) {
             $heading_rank = (int) $tag_name[1];
-            if (!in_array($heading_rank, [3,4,5,6])) { // As mentioned, h1 and h2 are unallowed
+            if (!in_array($heading_rank, array_slice([1,2,3,4,5,6], $this->heading_shift))) {
                 $this->errors[] = (object) [
                   'type' => 'heading unallowed',
                   'tag' => $tag_name,
                   'text' => $text,
                   'html' => $html,
-                  'recommendation' => 'Use allowed heading (<h3> to <h6>).'
+                  'recommendation' => 'Check and use only allowed headings.'
                 ];
             } else {
                 /*
