@@ -139,11 +139,11 @@ class Checker
             $allowed_headings = array_slice([1,2,3,4,5,6], $this->heading_shift);
             if (!in_array($heading_rank, $allowed_headings)) {
                 if (count($allowed_headings) > 0) {
-                  $allowed_headings_text = implode(', ', array_map(function ($x) {
-                    return "<h$x>";
-                  }, $allowed_headings));
+                    $allowed_headings_text = implode(', ', array_map(function ($x) {
+                        return "<h$x>";
+                    }, $allowed_headings));
                 } else {
-                  $allowed_headings_text = "no headings are allowed";
+                    $allowed_headings_text = "no headings are allowed";
                 }
                 $this->errors[] = (object) [
                   'type' => 'heading unallowed',
