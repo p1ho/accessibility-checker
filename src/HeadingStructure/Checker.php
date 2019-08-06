@@ -46,6 +46,9 @@ class Checker
     // strict mode
     private $is_strict;
 
+    // Block elements
+    private $block_elements;
+
     /**
      * __construct function
      * @param bool $is_strict
@@ -53,6 +56,8 @@ class Checker
      */
     public function __construct(bool $is_strict = true)
     {
+        require __DIR__ . "/../FontHelpers/block_elements.php";
+        $this->block_elements = $block_elements;
         $this->is_strict = $is_strict;
     }
 
@@ -113,7 +118,8 @@ class Checker
 
         // pre-define some variables
         $tag_name = $dom_el->tagName;
-        $text = $this->_get_text_content($dom_el);
+        $text = trim($this->_get_text_content($dom_el));
+        $html = $this->_get_outerHTML($dom_el);
         $expected_tag = 'h' . $expected_heading_rank;
 
         // if element is heading
@@ -124,6 +130,7 @@ class Checker
                   'type' => 'heading unallowed',
                   'tag' => $tag_name,
                   'text' => $text,
+                  'html' => $html,
                   'recommendation' => 'Use allowed heading (<h3> to <h6>).'
                 ];
             } else {
@@ -136,6 +143,7 @@ class Checker
                       'type' => 'heading inside heading',
                       'tag' => $tag_name,
                       'text' => $text,
+                      'html' => $html,
                       'recommendation' => 'Do not put heading inside another heading.'
                     ];
                 } else {
@@ -157,6 +165,7 @@ class Checker
                               'type' => 'heading skipped',
                               'tag' => $tag_name,
                               'text' => $text,
+                              'html' => $html,
                               'recommendation' => "<h$missing_rank> is expected before the placement of this heading."
                             ];
                         }
@@ -177,6 +186,7 @@ class Checker
                                   'type' => 'heading too shallow',
                                   'tag' => $tag_name,
                                   'text' => $text,
+                                  'html' => $html,
                                   'recommendation' => "Try nesting this heading deeper."
                                 ];
                             } elseif ($nested_level > $recorded_nested_level) {
@@ -184,6 +194,7 @@ class Checker
                                   'type' => 'heading too deep',
                                   'tag' => $tag_name,
                                   'text' => $text,
+                                  'html' => $html,
                                   'recommendation' => "Try nesting this heading shallower."
                                 ];
                             } else {
@@ -199,6 +210,7 @@ class Checker
                                           'type' => 'heading misplaced',
                                           'tag' => $tag_name,
                                           'text' => $text,
+                                          'html' => $html,
                                           'recommendation' => "Try nesting this heading shallower."
                                         ];
                                     }
@@ -220,6 +232,7 @@ class Checker
                                       'type' => 'heading misplaced',
                                       'tag' => $tag_name,
                                       'text' => $text,
+                                      'html' => $html,
                                       'recommendation' => "Try nesting this heading shallower."
                                     ];
                                 } else {
@@ -229,6 +242,7 @@ class Checker
                                               'type' => 'heading too shallow',
                                               'tag' => $tag_name,
                                               'text' => $text,
+                                              'html' => $html,
                                               'recommendation' => "Try nesting this heading deeper."
                                             ];
                                         } else {
@@ -257,6 +271,7 @@ class Checker
                   'type' => 'invalid heading',
                   'tag' => $tag_name,
                   'text' => $text,
+                  'html' => $html,
                   'recommendation' => "Use valid headings only (<h1> through <h6>)."
                 ];
             }
@@ -307,18 +322,11 @@ class Checker
 
     /**
      * _get_text_content helper.
-     * Gets text content that are not wrapped in any other tags.
-     * If it encounters another child tag, it will replace its content with '<tag>...</tag>'.
-     * If it encounters <br>, it will replace it with ' '.
      *
      * Example:
-     * <div>
-     *   This is
-     *   <div>I'm wrapped</div>
-     *   some text
-     * </div>
+     * <div>This is <div>I'm wrapped</div> some text</div>
      *
-     * Running this function over the node would return 'This is <div>...</div> some text'.
+     * Running this function would return "This is  I'm wrapped  some text"
      *
      * @param  DOMElement $dom_el
      * @return string
@@ -327,19 +335,51 @@ class Checker
     {
         $text = '';
         foreach ($dom_el->childNodes as $childNode) {
-            if (get_class($childNode) === 'DOMText') {
-                $text .= htmlspecialchars_decode(trim($childNode->wholeText));
-            } elseif (get_class($childNode) === 'DOMComment') {
+            if (get_class($childNode) === 'DOMComment') {
                 continue;
             } else {
-                if ($childNode->tagName == 'br') {
-                    $text .= ' ';
+                if (get_class($childNode) === 'DOMText') {
+                    $text_raw = htmlspecialchars_decode($childNode->wholeText);
+                    $text_to_add = trim($text_raw);
+                    if ($text_to_add === '') {
+                        if (strlen($text_raw) !== 0) {
+                            $text .= ' ';
+                        }
+                        continue;
+                    }
+                    $add_space_pre = preg_match("/^[\s\t\r\n]/", $text_raw);
+                    $add_space_post = preg_match("/[\s\t\r\n]$/", $text_raw);
+                    if ($add_space_pre) {
+                        $text_to_add = ' ' . $text_to_add;
+                    }
+                    if ($add_space_post) {
+                        $text_to_add .= ' ';
+                    }
                 } else {
-                    $tag = $childNode->tagName;
-                    $text .= "<$tag>...</$tag>";
+                    $text_to_add = $this->_get_text_content($childNode);
                 }
+                if (property_exists($childNode, 'tagName')) {
+                    if ($text_to_add !== '' && in_array(strtolower($childNode->tagName), $this->block_elements)) {
+                        $text .= ' ' . $text_to_add . ' ';
+                        continue;
+                    }
+                }
+                $text .= $text_to_add;
             }
         }
-        return str_replace(["\r", "\n"], '', $text);
+        return str_replace(["\r", "\n", "\t"], '', $text);
+    }
+    
+    /**
+     * _get_outerHTML helper.
+     * Consulted https://stackoverflow.com/questions/5404941/how-to-return-outer-html-of-domdocument
+     * @param  DOMElement $dom_el
+     * @return string
+     */
+    private function _get_outerHTML(\DOMElement $dom_el): string
+    {
+        $doc = new \DOMDocument();
+        $doc->appendChild($doc->importNode($dom_el, true));
+        return trim(str_replace(["\r"], '', $doc->saveHTML()));
     }
 }
