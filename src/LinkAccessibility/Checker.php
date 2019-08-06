@@ -20,6 +20,15 @@ class Checker extends Base
     private static $cache_time = 86400;
 
     /**
+     * __construct function
+     */
+    public function __construct()
+    {
+        require __DIR__ . "/../FontHelpers/block_elements.php";
+        $this->block_elements = $block_elements;
+    }
+
+    /**
      * evaluate function
      * @param  DOMDocument $dom [The whole parsed HTML DOM Tree]
      * @param  string $page_url [a page url, MUST include protocol]
@@ -59,7 +68,8 @@ class Checker extends Base
 
         $errors = [];
         foreach ($link_nodes as $link_node) {
-            $text = $this->_get_text_content($link_node);
+            $text = trim($this->_get_text_content($link_node));
+            $html = $this->_get_outerHTML($link_node);
             $path = $link_node->getAttribute('href');
 
             // check link-quality
@@ -69,6 +79,7 @@ class Checker extends Base
                     'type' => 'redirect',
                     'href' => $path,
                     'text' => $text,
+                    'html' => $html,
                     'recommendation' => 'Use the final redirected link.'];
             }
             if ($link_quality_eval['is_dead']) {
@@ -76,6 +87,7 @@ class Checker extends Base
                     'type' => 'dead',
                     'href' => $path,
                     'text' => $text,
+                    'html' => $html,
                     'recommendation' => 'Find an alternative working link.'];
             }
             if ($link_quality_eval['is_same_domain']) {
@@ -83,6 +95,7 @@ class Checker extends Base
                     'type' => 'domain overlap',
                     'href' => $path,
                     'text' => $text,
+                    'html' => $html,
                     'recommendation' => 'Use relative URL.'];
             }
             if ($link_quality_eval['timed_out']) {
@@ -90,6 +103,7 @@ class Checker extends Base
                     'type' => 'slow connection',
                     'href' => $path,
                     'text' => $text,
+                    'html' => $html,
                     'recommendation' => 'Troubleshoot why the page takes so long to load.'];
             }
 
@@ -100,6 +114,7 @@ class Checker extends Base
                     'type' => 'poor link text',
                     'href' => $path,
                     'text' => $text,
+                    'html' => $html,
                     'recommendation' => 'Use more descriptive and specific wording.'];
             }
             if (!$link_text_eval['passed_text_not_url']) {
@@ -107,6 +122,7 @@ class Checker extends Base
                     'type' => 'url link text',
                     'href' => $path,
                     'text' => $text,
+                    'html' => $html,
                     'recommendation' => 'Use real words that describe the link.'];
             }
             if (!$link_text_eval['passed_text_length']) {
@@ -114,6 +130,7 @@ class Checker extends Base
                     'type' => 'text too long',
                     'href' => $path,
                     'text' => $text,
+                    'html' => $html,
                     'recommendation' => 'Shorten the link text.'];
             }
             if ($link_text_eval['url_is_pdf']) {
@@ -122,6 +139,7 @@ class Checker extends Base
                         'type' => 'unclear pdf link',
                         'href' => $path,
                         'text' => $text,
+                        'html' => $html,
                         'recommendation' => 'Include the word "PDF" in the link.'];
                 }
             } else {
@@ -131,6 +149,7 @@ class Checker extends Base
                         'type' => 'unclear download link',
                         'href' => $path,
                         'text' => $text,
+                        'html' => $html,
                         'recommendation' => 'Include the word "download" in the link.'];
                 }
             }
@@ -172,43 +191,5 @@ class Checker extends Base
         $curl->header($filtered_paths, function ($x) {
             return;
         });
-    }
-
-    /**
-     * _get_text_content helper.
-     * Gets text content that are not wrapped in any other tags.
-     * If it encounters another child tag, it will replace its content with '<tag>...</tag>'.
-     * If it encounters <br>, it will replace it with ' '.
-     *
-     * Example:
-     * <div>
-     *   This is
-     *   <div>I'm wrapped</div>
-     *   some text
-     * </div>
-     *
-     * Running this function over the node would return 'This is <div>...</div> some text'.
-     *
-     * @param  DOMElement $dom_el
-     * @return string
-     */
-    private function _get_text_content(\DOMElement $dom_el): string
-    {
-        $text = '';
-        foreach ($dom_el->childNodes as $childNode) {
-            if (get_class($childNode) === 'DOMText') {
-                $text .= htmlspecialchars_decode(trim($childNode->wholeText));
-            } elseif (get_class($childNode) === 'DOMComment') {
-                continue;
-            } else {
-                if ($childNode->tagName == 'br') {
-                    $text .= ' ';
-                } else {
-                    $tag = $childNode->tagName;
-                    $text .= "<$tag>...</$tag>";
-                }
-            }
-        }
-        return str_replace(array("\r", "\n"), '', $text);
     }
 }

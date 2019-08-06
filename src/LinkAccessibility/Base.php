@@ -50,4 +50,67 @@ abstract class Base
             return $link_path;
         }
     }
+    
+    /**
+     * _get_text_content helper.
+     *
+     * Example:
+     * <div>This is <div>I'm wrapped</div> some text</div>
+     *
+     * Running this function would return "This is  I'm wrapped  some text"
+     *
+     * @param  DOMElement $dom_el
+     * @return string
+     */
+    protected function _get_text_content(\DOMElement $dom_el): string
+    {
+        $text = '';
+        foreach ($dom_el->childNodes as $childNode) {
+            if (get_class($childNode) === 'DOMComment') {
+                continue;
+            } else {
+                if (get_class($childNode) === 'DOMText') {
+                    $text_raw = htmlspecialchars_decode($childNode->wholeText);
+                    $text_to_add = trim($text_raw);
+                    if ($text_to_add === '') {
+                        if (strlen($text_raw) !== 0) {
+                            $text .= ' ';
+                        }
+                        continue;
+                    }
+                    $add_space_pre = preg_match("/^[\s\t\r\n]/", $text_raw);
+                    $add_space_post = preg_match("/[\s\t\r\n]$/", $text_raw);
+                    if ($add_space_pre) {
+                        $text_to_add = ' ' . $text_to_add;
+                    }
+                    if ($add_space_post) {
+                        $text_to_add .= ' ';
+                    }
+                } else {
+                    $text_to_add = $this->_get_text_content($childNode);
+                }
+                if (property_exists($childNode, 'tagName')) {
+                    if ($text_to_add !== '' && in_array(strtolower($childNode->tagName), $this->block_elements)) {
+                        $text .= ' ' . $text_to_add . ' ';
+                        continue;
+                    }
+                }
+                $text .= $text_to_add;
+            }
+        }
+        return str_replace(["\r", "\n", "\t"], '', $text);
+    }
+    
+    /**
+     * _get_outerHTML helper.
+     * Consulted https://stackoverflow.com/questions/5404941/how-to-return-outer-html-of-domdocument
+     * @param  DOMElement $dom_el
+     * @return string
+     */
+    protected function _get_outerHTML(\DOMElement $dom_el): string
+    {
+        $doc = new \DOMDocument();
+        $doc->appendChild($doc->importNode($dom_el, true));
+        return trim(str_replace(["\r"], '', $doc->saveHTML()));
+    }
 }

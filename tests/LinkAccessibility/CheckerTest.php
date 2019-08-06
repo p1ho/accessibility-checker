@@ -24,8 +24,41 @@ final class CheckerTest extends TestCase
     {
         $checker = new Checker();
         $testcase = new \testcase('<a>Link without href</a>', [
-          'passed' => 1,
+          'passed' => true,
           'errors' => []
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom, "https://www.google.com"),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+    }
+
+    public function testReturnFormat(): void
+    {
+        $checker = new Checker();
+        $href = "https://www.google.com";
+        $text = "here";
+        $html = "<a href=\"$href\">$text</a>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'domain overlap',
+              'href' => $href,
+              'text' => $text,
+              'html' => $html,
+              'recommendation' => 'Use relative URL.'
+            ],
+            (object) [
+              'type' => 'poor link text',
+              'href' => $href,
+              'text' => $text,
+              'html' => $html,
+              'recommendation' => 'Use more descriptive and specific wording.'
+            ]
+          ]
         ]);
         $dom = $this->getDOM($testcase->input);
         $this->assertEquals(
