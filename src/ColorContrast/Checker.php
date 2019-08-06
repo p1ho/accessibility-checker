@@ -266,6 +266,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'html' => $html,
+                      'recommendation' => 'Fix the invalid background-color.'
                     ];
                 }
             }
@@ -280,6 +281,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'html' => $html,
+                      'recommendation' => 'Fix the invalid color.'
                     ];
                 }
             }
@@ -294,6 +296,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'html' => $html,
+                      'recommendation' => 'Fix the invalid font-size.'
                     ];
                 }
             }
@@ -308,6 +311,7 @@ class Checker
                       'tag' => $tag_name,
                       'text' => $text,
                       'html' => $html,
+                      'recommendation' => 'Fix the invalid font-weight.'
                     ];
                 }
             }
@@ -347,7 +351,8 @@ class Checker
                       'text' => $text,
                       'html' => $html,
                       'text_is_large' => true,
-                      'contrast_ratio' => $contrast_ratio
+                      'contrast_ratio' => $contrast_ratio,
+                      'recommendation' => 'Contrast Ratio for this element must be at least 3.0',
                     ];
                 }
             } else {
@@ -359,7 +364,8 @@ class Checker
                       'text' => $text,
                       'html' => $html,
                       'text_is_large' => false,
-                      'contrast_ratio' => $contrast_ratio
+                      'contrast_ratio' => $contrast_ratio,
+                      'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
                     ];
                 }
             }
@@ -373,7 +379,8 @@ class Checker
                       'text' => $text,
                       'html' => $html,
                       'text_is_large' => true,
-                      'contrast_ratio' => $contrast_ratio
+                      'contrast_ratio' => $contrast_ratio,
+                      'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
                     ];
                 }
             } else {
@@ -385,7 +392,8 @@ class Checker
                       'text' => $text,
                       'html' => $html,
                       'text_is_large' => false,
-                      'contrast_ratio' => $contrast_ratio
+                      'contrast_ratio' => $contrast_ratio,
+                      'recommendation' => 'Contrast Ratio for this element must be at least 7.0',
                     ];
                 }
             }

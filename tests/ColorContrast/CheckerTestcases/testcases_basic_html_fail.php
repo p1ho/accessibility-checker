@@ -27,6 +27,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="color: white;">white text</p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -45,6 +46,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="background-color:black">black background</p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -69,6 +71,7 @@ $testcases_basic_html_fail = array(
         </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -78,6 +81,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p>black container</p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -96,6 +100,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="color:white">white text</p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -114,6 +119,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="color:yellow">yellow text</p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.07',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -132,6 +138,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="color: yellow;">outside mark<mark>in mark</mark></p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.07',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -150,6 +157,7 @@ $testcases_basic_html_fail = array(
         'html' => '<mark style="background-color: black;">in mark</mark>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -168,6 +176,7 @@ $testcases_basic_html_fail = array(
         'html' => '<span style="color: yellow;">yellow text</span>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -186,6 +195,7 @@ $testcases_basic_html_fail = array(
         'html' => '<a href="" style="background-color: blue;">link</a>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -204,6 +214,7 @@ $testcases_basic_html_fail = array(
         'html' => '<a style="color: white;">link</a>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -222,6 +233,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="color: rgba(0, 0, 0, 0);">transparent text</p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -240,6 +252,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="background-color: rgba(0, 0, 0, .8);">transparent background</p>',
         'text_is_large' => false,
         'contrast_ratio' => '1.66',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -258,6 +271,7 @@ $testcases_basic_html_fail = array(
         'html' => '<span style="background-color: rgba(0, 0, 0, .7);">transparent background</span>',
         'text_is_large' => false,
         'contrast_ratio' => '2.38',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -296,6 +310,7 @@ $testcases_basic_html_fail = array(
           </div>',
         'text_is_large' => false,
         'contrast_ratio' => '2.61',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -311,6 +326,7 @@ $testcases_basic_html_fail = array(
             </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.75',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -323,6 +339,7 @@ $testcases_basic_html_fail = array(
               </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.26',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -355,6 +372,7 @@ $testcases_basic_html_fail = array(
           </div>',
         'text_is_large' => false,
         'contrast_ratio' => '2.61',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -367,6 +385,7 @@ $testcases_basic_html_fail = array(
             </div>',
         'text_is_large' => false,
         'contrast_ratio' => '2.61',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -408,6 +427,7 @@ $testcases_basic_html_fail = array(
         </div>',
         'text_is_large' => false,
         'contrast_ratio' => '2.62',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -426,6 +446,7 @@ $testcases_basic_html_fail = array(
           </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.75',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -441,6 +462,7 @@ $testcases_basic_html_fail = array(
             </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.39',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -453,6 +475,7 @@ $testcases_basic_html_fail = array(
               </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.09',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -492,6 +515,7 @@ $testcases_basic_html_fail = array(
         </div>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -506,6 +530,7 @@ $testcases_basic_html_fail = array(
           </p>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -515,6 +540,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p style="font-size: 18px; font-weight: bold">small text 2</p>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -524,6 +550,7 @@ $testcases_basic_html_fail = array(
         'html' => '<p>small text 3</p>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -556,6 +583,7 @@ $testcases_basic_html_fail = array(
         </div>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -565,6 +593,7 @@ $testcases_basic_html_fail = array(
         'html' => '<h4>h4</h4>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -574,6 +603,7 @@ $testcases_basic_html_fail = array(
         'html' => '<h5>h5</h5>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -583,6 +613,7 @@ $testcases_basic_html_fail = array(
         'html' => '<h6>h6</h6>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -616,6 +647,7 @@ $testcases_basic_html_fail = array(
         'html' => '<h1 style="color:#7D7D7D;">h1 level 4</h1>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -625,6 +657,7 @@ $testcases_basic_html_fail = array(
         'html' => '<h1 style="color:#7D7D7D;">h1 level 5</h1>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -634,6 +667,7 @@ $testcases_basic_html_fail = array(
         'html' => '<h1 style="color:#7D7D7D;">h1 level 6</h1>',
         'text_is_large' => false,
         'contrast_ratio' => '4.12',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -657,6 +691,7 @@ $testcases_basic_html_fail = array(
         </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
       (object) [
         'type' => 'low contrast',
@@ -666,6 +701,7 @@ $testcases_basic_html_fail = array(
         'html' => '<h1 style="background-color: initial;">h1</h1>',
         'text_is_large' => true,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 3.0',
       ],
     ))
   ),
@@ -689,6 +725,7 @@ $testcases_basic_html_fail = array(
         </div>',
         'text_is_large' => false,
         'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),
@@ -705,6 +742,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'p',
         'text' => 'invalid colors',
         'html' => '<p style="background-color: reddd; color:reddd">invalid colors</p>',
+        'recommendation' => 'Fix the invalid background-color.',
       ],
       (object) [
         'type' => 'invalid color',
@@ -712,6 +750,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'p',
         'text' => 'invalid colors',
         'html' => '<p style="background-color: reddd; color:reddd">invalid colors</p>',
+        'recommendation' => 'Fix the invalid color.',
       ],
     ))
   ),
@@ -729,6 +768,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'p',
         'text' => 'invalid font-size 1',
         'html' => '<p style="font-size: 12ppp">invalid font-size 1</p>',
+        'recommendation' => 'Fix the invalid font-size.',
       ],
       (object) [
         'type' => 'invalid size',
@@ -736,6 +776,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'p',
         'text' => 'invalid font-size 2',
         'html' => '<p style="font-size: -12px">invalid font-size 2</p>',
+        'recommendation' => 'Fix the invalid font-size.',
       ],
     ))
   ),
@@ -756,6 +797,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'p',
         'text' => 'invalid font-weight 1',
         'html' => '<p style="font-weight: ppppp">invalid font-weight 1</p>',
+        'recommendation' => 'Fix the invalid font-weight.',
       ],
       (object) [
         'type' => 'invalid weight',
@@ -763,6 +805,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'p',
         'text' => 'invalid font-weight 2',
         'html' => '<p style="font-weight: 1100">invalid font-weight 2</p>',
+        'recommendation' => 'Fix the invalid font-weight.',
       ],
       (object) [
         'type' => 'invalid weight',
@@ -770,6 +813,7 @@ $testcases_basic_html_fail = array(
         'tag' => 'p',
         'text' => 'invalid font-weight 3',
         'html' => '<p style="font-weight: -1">invalid font-weight 3</p>',
+        'recommendation' => 'Fix the invalid font-weight.',
       ],
     ))
   ),
