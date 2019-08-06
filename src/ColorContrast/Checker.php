@@ -6,7 +6,7 @@ use P1ho\AccessibilityChecker\ColorContrast\Calculator;
 
 require_once "CalculatorHelpers/rgba2rgb.php";
 require_once "CalculatorHelpers/hsla2rgb.php";
-require_once "FontHelpers/convert2pt.php";
+require_once __DIR__ . "/../FontHelpers/convert2pt.php";
 
 /**
  * Color Contrast Checker class for Accessibility Checker
@@ -97,8 +97,8 @@ class Checker
      */
     public function __construct($mode = "AA")
     {
-        require "FontHelpers/default_font_sizes.php";
-        require "FontHelpers/block_elements.php";
+        require __DIR__ . "/../FontHelpers/default_font_sizes.php";
+        require __DIR__ . "/../FontHelpers/block_elements.php";
         if (!in_array($mode, ['AA', 'AAA'])) {
             $mode = 'AA';
         }
