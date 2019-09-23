@@ -86,7 +86,7 @@ abstract class Base
                     if ($add_space_post) {
                         $text_to_add .= ' ';
                     }
-                } else {
+                } elseif (get_class($childNode) === 'DOMElement') {
                     $text_to_add = $this->_get_text_content($childNode);
                 }
                 if (property_exists($childNode, 'tagName')) {
