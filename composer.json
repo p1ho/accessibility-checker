@@ -63,6 +63,8 @@
         "style-fix-download": "curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer",
         "style-fix": "php php-cs-fixer fix ./",
         "phpcov-merge": "vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov",
-        "phpcov-merge-win": "vendor\\bin\\phpcov merge --clover build/logs/clover.xml build/cov"
+        "phpcov-merge-win": "vendor\\bin\\phpcov merge --clover build/logs/clover.xml build/cov",
+        "coveralls": "vendor/bin/php-coveralls",
+        "coveralls-win": "vendor\\bin\\php-coveralls"
     }
 }
