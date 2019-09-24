@@ -309,11 +309,11 @@ Note: at least 2/3 of the words in the text are in the black list.
 
 | Key | Value |
 | --- | ----- |
-| **type** | `"text too long"` |
+| **type** | `"bad text length"` |
 | **href** | value inside `href` attribute |
 | **text** | text inside the tag (also texts from nested tags) |
 | **html** | raw html of the tag |
-| **recommendation** | `"Shorten the link text."` |
+| **recommendation** | `"Ideal link text should be between 1 to 100 characters."` |
 
 Note: The current limit is 100 characters.
 

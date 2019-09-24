@@ -126,4 +126,20 @@ $testcases_pass = array(
     )
   ),
 //------------------------------------------------------------------------------
+  // image with good alt text
+  new testcase(
+      '
+    <a href="https://packagist.org"><img src="" alt="Go to Packagist.org"></a>
+    ',
+      array(
+      'passed_blacklist_words'    => true,
+      'passed_text_not_url'       => true,
+      'passed_text_length'        => true,
+      'url_is_download'           => false,
+      'text_has_download'         => false,
+      'url_is_pdf'                => false,
+      'text_has_pdf'              => false,
+    )
+  ),
+//------------------------------------------------------------------------------
 );

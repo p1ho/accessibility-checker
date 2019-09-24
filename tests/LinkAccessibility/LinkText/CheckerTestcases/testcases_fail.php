@@ -174,7 +174,7 @@ $testcases_fail = array(
     )
   ),
 //------------------------------------------------------------------------------
-  // black list words 11
+  // black list words 11 and empty text
   new testcase(
       '
     <a href=""> </a>
@@ -182,7 +182,23 @@ $testcases_fail = array(
       array(
       'passed_blacklist_words'    => false,
       'passed_text_not_url'       => true,
-      'passed_text_length'        => true,
+      'passed_text_length'        => false,
+      'url_is_download'           => false,
+      'text_has_download'         => false,
+      'url_is_pdf'                => false,
+      'text_has_pdf'              => false,
+    )
+  ),
+//------------------------------------------------------------------------------
+  // black list words 12 and empty text
+  new testcase(
+      '
+    <a href=""> </a>
+    ',
+      array(
+      'passed_blacklist_words'    => false,
+      'passed_text_not_url'       => true,
+      'passed_text_length'        => false,
       'url_is_download'           => false,
       'text_has_download'         => false,
       'url_is_pdf'                => false,
@@ -366,7 +382,7 @@ $testcases_fail = array(
     )
   ),
 //------------------------------------------------------------------------------
-  // long url (101 spaces) will fail both blacklist words and text length
+  // long url (101 spaces) will fail both blacklist words and text length (will be trimmed to 0)
   new testcase(
       '
     <a href="">                                                                                                     </a>
@@ -375,6 +391,23 @@ $testcases_fail = array(
       'passed_blacklist_words'    => false,
       'passed_text_not_url'       => true,
       'passed_text_length'        => false,
+      'url_is_download'           => false,
+      'text_has_download'         => false,
+      'url_is_pdf'                => false,
+      'text_has_pdf'              => false,
+    )
+  ),
+//------------------------------------------------------------------------------
+  // long url (lots of spaces) with a black list word will fail just blacklist words
+  // and not text length (because of trimming)
+  new testcase(
+      '
+    <a href="">click                                                                                                     </a>
+    ',
+      array(
+      'passed_blacklist_words'    => false,
+      'passed_text_not_url'       => true,
+      'passed_text_length'        => true,
       'url_is_download'           => false,
       'text_has_download'         => false,
       'url_is_pdf'                => false,
@@ -410,6 +443,38 @@ $testcases_fail = array(
       'url_is_download'           => true,
       'text_has_download'         => false,
       'url_is_pdf'                => true,
+      'text_has_pdf'              => false,
+    )
+  ),
+//------------------------------------------------------------------------------
+  // image with bad alt text
+  new testcase(
+      '
+    <a href="https://packagist.org"><img src="" alt=""></a>
+    ',
+      array(
+      'passed_blacklist_words'    => false,
+      'passed_text_not_url'       => true,
+      'passed_text_length'        => false,
+      'url_is_download'           => false,
+      'text_has_download'         => false,
+      'url_is_pdf'                => false,
+      'text_has_pdf'              => false,
+    )
+  ),
+//------------------------------------------------------------------------------
+  // multiple images (first one fail)
+  new testcase(
+      '
+    <a href="https://packagist.org"><img src="" alt=""><img src="" alt="Go to Packagist.org"></a>
+    ',
+      array(
+      'passed_blacklist_words'    => false,
+      'passed_text_not_url'       => true,
+      'passed_text_length'        => false,
+      'url_is_download'           => false,
+      'text_has_download'         => false,
+      'url_is_pdf'                => false,
       'text_has_pdf'              => false,
     )
   ),

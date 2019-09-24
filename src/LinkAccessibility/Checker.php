@@ -127,11 +127,11 @@ class Checker extends Base
             }
             if (!$link_text_eval['passed_text_length']) {
                 $errors[] = (object) [
-                    'type' => 'text too long',
+                    'type' => 'bad text length',
                     'href' => $path,
                     'text' => $text,
                     'html' => $html,
-                    'recommendation' => 'Shorten the link text.'];
+                    'recommendation' => 'Ideal link text should be between 1 to 100 characters.'];
             }
             if ($link_text_eval['url_is_pdf']) {
                 if (!$link_text_eval['text_has_pdf']) {

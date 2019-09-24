@@ -109,15 +109,28 @@ class Checker extends Base
      */
     public static function evaluate(\DOMElement $link_node, string $page_url): array
     {
-        $link_text = $link_node->textContent;
+        $link_text = trim($link_node->textContent);
         $link_url  = $link_node->getAttribute('href');
         $site_url  = static::get_site_url($page_url);
         $page_path = str_replace($site_url, "", $page_url);
-
+        
+        // if there's no link text, then we check if there's an image,
+        // we extract the first image and get its alt attribute,
+        // we then run the same check as if it's the link text.
+        // Assuming there is only one image under anchor tag
+        if (trim($link_text) === "") {
+            $images = $link_node->getElementsByTagName("img");
+            foreach ($images as $image) {
+                $link_text = $image->getAttribute('alt');
+                // break after first image
+                break;
+            }
+        }
+        
         $eval = [
             'passed_blacklist_words' => self::_blacklist_words_passed($link_text),
             'passed_text_not_url'    => !self::_is_url($link_text),
-            'passed_text_length'     => strlen($link_text) <= 100,
+            'passed_text_length'     => strlen($link_text) > 0 && strlen($link_text) <= 100,
             'url_is_download'        => self::_url_is_download($link_url, $page_path, $site_url),
             'text_has_download'      => strpos(strtolower($link_text), 'download') !== false,
             'url_is_pdf'             => self::_url_is_pdf($link_url, $page_path, $site_url),
