@@ -36,10 +36,12 @@ class Checker extends Base
 
         $link_path = trim($link_path);
         $page_url = trim($page_url);
-        $site_url = static::get_site_url($page_url);
-        $page_path = str_replace($site_url, "", $page_url);
+        $link_domain = static::get_site_url($link_path);
+        $site_domain = static::get_site_url($page_url);
+        $page_path = str_replace($site_domain, "", $page_url);
 
-        $is_same_domain = strpos($link_path, $site_url) !== false;
+        $link_path_strip_protocol = preg_replace('/(http)s?\:\/\//i', '', $link_domain);
+        $is_same_domain = strpos($site_domain, $link_path_strip_protocol) !== false;
 
         /*
         if url is empty, or starts with the following:
@@ -56,7 +58,7 @@ class Checker extends Base
                 'is_same_domain' => false,
                 'timed_out'      => false];
         } else {
-            $link_path = static::compute_link_url($link_path, $page_path, $site_url);
+            $link_path = static::compute_link_url($link_path, $page_path, $site_domain);
         }
 
         // make HEAD request to get Headers
