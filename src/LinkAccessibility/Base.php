@@ -11,17 +11,18 @@ abstract class Base
 
     /**
      * get_site_url function
-     * @param  string $page_url [a page url, MUST include protocol]
+     * @param  string $page_url [a page url, with or without protocol]
      * @return string           [the site/home url]
      */
     public static function get_site_url(string $page_url): string
     {
-        $url_no_protocol = substr($page_url, 8);
-        $third_slash_pos = strpos($url_no_protocol, '/');
+        $link_strip_protocol = preg_replace('/(http)s?\:\/\//i', '', $page_url);
+        $offset = strlen($page_url) - strlen($link_strip_protocol);
+        $third_slash_pos = strpos($link_strip_protocol, '/');
         if ($third_slash_pos === false) {
             return $page_url;
         } else {
-            return substr($page_url, 0, $third_slash_pos + 8);
+            return substr($page_url, 0, $third_slash_pos + $offset);
         }
     }
 
