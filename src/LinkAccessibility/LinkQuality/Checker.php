@@ -68,7 +68,7 @@ class Checker extends Base
           CURLOPT_TIMEOUT => 5,
           CURLOPT_CONNECTTIMEOUT => 5
         ]);
-        $curl->header($link_path, function ($result) {
+        $curl->get($link_path, function ($result) {
             if ($result->response[1] == CURLE_OK) {
                 self::$result = $result;
             } else {

@@ -29,7 +29,7 @@ Currently, this is being developed with the goal to analyze body texts from *Dru
 
 1. **Image Accessibility**: We have to assume that people using the screen readers cannot see anything on the page (only hear it), and this includes pictures. Thus, images that are integral to the content must also contain a description in its 'alt' attribute. This program will raise errors for ```<img>``` that do not have alt attributes and will raise warnings for ```<img>``` that has an empty alt attribute (because it is possible for a picture to be there simply for aesthetics).
 
-1. **Link Accessibility**: This checks 2 things: whether links are dead/unoptimized, and whether link texts are clear and descriptive. In particular, link text is also important for screen readers because usually there is an option to list all the links on a particular page; if all the links reads ***click here*** or ***more detail***, then it becomes impossible for the user to know whether the link is useful without actually accessing it.
+1. **Link Accessibility**: This checks 2 things: whether links are dead/unoptimized, and whether link texts are clear and descriptive. In particular, link text is also important for screen readers because usually there is an option to list all the links on a particular page; if all the links reads ***click here*** or ***more detail***, then it becomes impossible for the user to know whether the link is useful without actually accessing it. (In previous versions, HEAD requests were used; however, it turns out not all servers may implement HEAD requests correctly, or allow it at all, thus a regular GET request is used now, trading data size for consistency)
 
 # Installation
 

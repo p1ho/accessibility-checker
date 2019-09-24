@@ -31,6 +31,14 @@ final class CheckerTest extends TestCase
             'timed_out'      => false],
             Checker::evaluate('tel:something', 'https://www.google.com')
        );
+       
+       $this->assertEquals(
+             ['is_redirect'    => false,
+             'is_dead'        => false,
+             'is_same_domain' => false,
+             'timed_out'      => false],
+             Checker::evaluate('https://www.instagram.com/umichunions/', 'https://www.google.com')
+       );
     }
 
     public function testGetSiteUrl(): void

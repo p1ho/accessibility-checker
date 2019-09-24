@@ -204,7 +204,7 @@ class Checker extends Base
         // make HEAD request to get Headers
         $curl = new \Zebra_cURL();
         $curl->cache(__DIR__. '/../../../cache/', self::$cache_time, true, 0777);
-        $curl->header($link_path, function ($result) {
+        $curl->get($link_path, function ($result) {
             self::$result = $result;
         });
         if (self::$result !== null && self::$result->response[1] === CURLE_OK) {
@@ -286,7 +286,7 @@ class Checker extends Base
         // make HEAD request to get Headers
         $curl = new \Zebra_cURL();
         $curl->cache(__DIR__. '/../../../cache/', self::$cache_time, true, 0777);
-        $curl->header($link_path, function ($result) {
+        $curl->get($link_path, function ($result) {
             self::$result = $result;
         });
         if (self::$result !== null) {

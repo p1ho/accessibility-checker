@@ -188,7 +188,7 @@ class Checker extends Base
           CURLOPT_TIMEOUT => 5,
           CURLOPT_CONNECTTIMEOUT => 5
         ]);
-        $curl->header($filtered_paths, function ($x) {
+        $curl->get($filtered_paths, function ($x) {
             return;
         });
     }
