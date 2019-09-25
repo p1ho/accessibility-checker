@@ -39,9 +39,12 @@ class Checker extends Base
         $link_domain = static::get_site_url($link_path);
         $site_domain = static::get_site_url($page_url);
         $page_path = str_replace($site_domain, "", $page_url);
-
         $link_path_strip_protocol = preg_replace('/(http)s?\:\/\//i', '', $link_domain);
-        $is_same_domain = strpos($site_domain, $link_path_strip_protocol) !== false;
+        if (strlen($link_path_strip_protocol) === 0) {
+            $is_same_domain = false;
+        } else {
+            $is_same_domain = strpos($site_domain, $link_path_strip_protocol) !== false;
+        }
 
         /*
         if url is empty, or starts with the following:
