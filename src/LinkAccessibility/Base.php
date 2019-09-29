@@ -89,6 +89,8 @@ abstract class Base
                     }
                 } elseif (get_class($childNode) === 'DOMElement') {
                     $text_to_add = $this->_get_text_content($childNode);
+                } else {
+                    $text_to_add = "";
                 }
                 if (property_exists($childNode, 'tagName')) {
                     if ($text_to_add !== '' && in_array(strtolower($childNode->tagName), $this->block_elements)) {
