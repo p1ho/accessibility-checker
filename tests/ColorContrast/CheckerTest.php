@@ -35,6 +35,122 @@ final class CheckerTest extends TestCase
         }
     }
 
+    public function testColorOverride(): void
+    {
+        // check override on checker instantiation
+        $checker = new Checker("AA", "blue", "white");
+        $input = '<p style="color: blue">blue text on blue</p>';
+        $expected_output = array(
+            'passed'=>false,
+            'errors'=>array(
+            (object) [
+                'type' => 'low contrast',
+                'mode' => 'AA',
+                'tag' => 'p',
+                'text' => 'blue text on blue',
+                'html' => '<p style="color: blue">blue text on blue</p>',
+                'text_is_large' => false,
+                'contrast_ratio' => '1.00',
+                'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
+            ])
+        );
+        $dom = $this->getDOM($input);
+        $this->assertEquals(
+            $expected_output,
+            $checker->evaluate($dom)
+        );
+
+        $checker = new Checker("AA", "white", "blue");
+        $input = '<p style="background-color: blue">blue text on blue</p>';
+        $expected_output = array(
+            'passed'=>false,
+            'errors'=>array(
+            (object) [
+                'type' => 'low contrast',
+                'mode' => 'AA',
+                'tag' => 'p',
+                'text' => 'blue text on blue',
+                'html' => '<p style="background-color: blue">blue text on blue</p>',
+                'text_is_large' => false,
+                'contrast_ratio' => '1.00',
+                'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
+            ])
+        );
+        $dom = $this->getDOM($input);
+        $this->assertEquals(
+            $expected_output,
+            $checker->evaluate($dom)
+        );
+
+        // check override on evaluate method call with normal instantiation
+        $checker = new Checker();
+        $input = '<p style="color: blue">blue text on blue</p>';
+        $expected_output = array(
+            'passed'=>false,
+            'errors'=>array(
+            (object) [
+                'type' => 'low contrast',
+                'mode' => 'AA',
+                'tag' => 'p',
+                'text' => 'blue text on blue',
+                'html' => '<p style="color: blue">blue text on blue</p>',
+                'text_is_large' => false,
+                'contrast_ratio' => '1.00',
+                'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
+            ])
+        );
+        $dom = $this->getDOM($input);
+        $this->assertEquals(
+            $expected_output,
+            $checker->evaluate($dom, "blue", "white")
+        );
+
+        $checker = new Checker();
+        $input = '<p style="background-color: blue">blue text on blue</p>';
+        $expected_output = array(
+            'passed'=>false,
+            'errors'=>array(
+            (object) [
+                'type' => 'low contrast',
+                'mode' => 'AA',
+                'tag' => 'p',
+                'text' => 'blue text on blue',
+                'html' => '<p style="background-color: blue">blue text on blue</p>',
+                'text_is_large' => false,
+                'contrast_ratio' => '1.00',
+                'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
+            ])
+        );
+        $dom = $this->getDOM($input);
+        $this->assertEquals(
+            $expected_output,
+            $checker->evaluate($dom, "white", "blue")
+        );
+
+        // check override on evaluate method dominates override on instantiation
+        $checker = new Checker("AA", "yellow", "black");
+        $input = '<p style="color: white">white text on white</p>';
+        $expected_output = array(
+            'passed'=>false,
+            'errors'=>array(
+            (object) [
+                'type' => 'low contrast',
+                'mode' => 'AA',
+                'tag' => 'p',
+                'text' => 'white text on white',
+                'html' => '<p style="color: white">white text on white</p>',
+                'text_is_large' => false,
+                'contrast_ratio' => '1.00',
+                'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
+            ])
+        );
+        $dom = $this->getDOM($input);
+        $this->assertEquals(
+            $expected_output,
+            $checker->evaluate($dom, "white", "blue")
+        );
+    }
+
     private function getDOM($s)
     {
         $dom = new \DOMDocument();

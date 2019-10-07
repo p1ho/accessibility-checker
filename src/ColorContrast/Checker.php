@@ -78,6 +78,9 @@ class Checker
     // Keeps mode
     private $mode;
 
+    // Default background-color
+    private $default_bg_color;
+
     // Default font-color
     private $default_font_color;
 
@@ -93,9 +96,11 @@ class Checker
 
     /**
      * __construct function
-     * @param string $mode [WCAG mode (AA or AAA), defaults to AA]
+     * @param string $mode       [WCAG mode (AA or AAA), defaults to AA]
+     * @param string $bg_color   [default background color for this Checker instance]
+     * @param string $font_color [default font color for this Checker instance]
      */
-    public function __construct($mode = "AA")
+    public function __construct(string $mode = "AA", string $bg_color = "white", string $font_color = "black")
     {
         require __DIR__ . "/../FontHelpers/default_font_sizes.php";
         require __DIR__ . "/../FontHelpers/block_elements.php";
@@ -103,7 +108,8 @@ class Checker
             $mode = 'AA';
         }
         $this->mode = $mode;
-        $this->default_font_color     = "black";
+        $this->default_bg_color       = $bg_color;
+        $this->default_font_color     = $font_color;
         $this->default_font_sizes     = $default_font_sizes;
         $this->block_elements         = $block_elements;
     }
@@ -113,14 +119,16 @@ class Checker
      * If mode is not supplied, it will assume we are evaluating using WCAG 2.0 AA
      * If it is supplied but invalid, we will also assume AA.
      *
-     * @param  DOMDocument $dom  [The whole parsed HTML DOM Tree]
+     * @param  DOMDocument $dom        [The whole parsed HTML DOM Tree]
+     * @param  string|null $bg_color   [override default background color for this Checker instance]
+     * @param  string|null $font_color [override default font color for this Checker instance]
      * @return array
      */
-    public function evaluate(\DOMDocument $dom): array
+    public function evaluate(\DOMDocument $dom, ?string $bg_color = null, ?string $font_color = null): array
     {
         $this->errors = [];
-        $this->parent_true_bg_color   = "white";
-        $this->parent_true_font_color = "black";
+        $this->parent_true_bg_color   = $bg_color   ?? $this->default_bg_color;
+        $this->parent_true_font_color = $font_color ?? $this->default_font_color;
 
         if (count($dom->getElementsByTagName('body')) > 0) {
             $body = $dom->getElementsByTagName('body')[0];
@@ -135,7 +143,15 @@ class Checker
             $eval_array['passed'] = true;
             $eval_array['errors'] = array();
         } else {
-            $this->_eval_DOM($body, "white", "black", 12, false, 0, false);
+            $this->_eval_DOM(
+                $body,
+                $this->parent_true_bg_color,
+                $this->parent_true_font_color,
+                $this->default_font_sizes['p'],
+                false,
+                0,
+                false
+            );
             $eval_array['passed'] = (count($this->errors) === 0);
             $eval_array['errors'] = $this->errors;
         }
@@ -334,7 +350,7 @@ class Checker
             }
         }
 
-        $font_is_large = $this::_is_large_font($font_size, $font_is_bold);
+        $font_is_large = $this->_is_large_font($font_size, $font_is_bold);
 
         /*--------------------------------------------------------------------------
         Conduct Color Contrast Check
