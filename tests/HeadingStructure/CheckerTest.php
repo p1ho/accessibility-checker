@@ -57,8 +57,22 @@ final class CheckerTest extends TestCase
 
     public function testHeadingShift(): void
     {
-        // heading shift should override 0 and default to 1
+        // no heading shift
         $checker = new Checker(0, true);
+        $html = "<h1>Normal h1</h1>";
+        $testcase = new \testcase($html, [
+          'passed' => true,
+          'errors' => []
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        // heading shift should override 0 and default to 1
+        $checker = new Checker(-1, true);
         $html = "<h2>Normal h2</h2>";
         $testcase = new \testcase($html, [
           'passed' => true,

@@ -54,7 +54,7 @@ class Checker
 
     /**
      * __construct function
-     * @param int  $heading_shift (1 - 5; corresponds to h2 - h6)
+     * @param int  $heading_shift (0 - 6; corresponds to h1 - no heading allowed)
      * [Number of heading levels to shift. For example, if 1 is given, we shift
      * heading level by 1, meaning the first heading we expect is h2]
      * @param bool $is_strict
@@ -64,7 +64,7 @@ class Checker
     {
         require __DIR__ . "/../FontHelpers/block_elements.php";
         $this->block_elements = $block_elements;
-        if ($heading_shift < 1) {
+        if ($heading_shift < 0) {
             $this->heading_shift = 1;
         } elseif ($heading_shift > 6) {
             $this->heading_shift = 6;
@@ -174,7 +174,7 @@ class Checker
                     2) If first test passed, we check if heading number has been set in
                     the heading_level_structure, then do subsequent tests.
                     */
-                    $prev_rank = $this->heading_order[count($this->heading_order) - 1];
+                    $prev_rank = isset($this->heading_order[count($this->heading_order) - 1]) ? $this->heading_order[count($this->heading_order) - 1] : 0;
                     $this->heading_order[] = $heading_rank; // record heading appearance order
                     $rank_diff = $heading_rank - $prev_rank;
                     if ($rank_diff > 1) {

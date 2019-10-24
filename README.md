@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/p1ho/accessibility-checker.svg?branch=master)](https://travis-ci.com/p1ho/accessibility-checker)
 [![Coverage Status](https://coveralls.io/repos/github/p1ho/accessibility-checker/badge.svg?branch=master)](https://coveralls.io/github/p1ho/accessibility-checker?branch=master)
 
-# Table of Content
+## Table of Content
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [Usage](#usage)
@@ -15,7 +15,7 @@
 * [Development](#development)
 * [Contributors](#contributors)
 
-# Introduction
+## Introduction
 
 This is a [Web Accessibility](https://en.wikipedia.org/wiki/Web_accessibility) testing suite that evaluates the HTML string extracted from Content Management Systems. This is not meant to be an exhaustive accessibility check, but it aims to bring severe accessibility issues to light, as well as generate awareness for accessibility in general.
 
@@ -48,7 +48,16 @@ This package is not currently published to [Packagist](https://packagist.org/), 
 ```
 (Note: if you have other items in `"require"` and `"respositories"` already, just add them to the existing list)
 
-# Usage
+## Usage
+
+### configurations
+
+| Checker Name | Parameters | Description |
+| --- | --- | --- |
+| Color Contrast Checker | mode | "AA" or "AAA" |
+| Heading Structure Checker | heading_shift, strict_mode | Because CMS usually has a separate field for page title, the content part does not actually start at `<h1>`, `heading_shift` takes this into account (accepts a number from 0-6). If `strict_mode` is set to `false`, different headings like `<h1>` and `<h2>` can be nested at the same level, if set to `true`, `<h2>` would have to be nested deeper. |
+| Image Accessibility Checker | none | accepts no parameter |
+| Link Accessibility Checker | none | accepts no parameter |
 
 example:
 ```PHP
@@ -79,7 +88,7 @@ $heading_structure_result   = $heading_structure_checker->evaluate($dom);
 $image_accessibility_result = $img_accessibility_checker->evaluate($dom);
 $link_accessibility_result  = $link_accessibility_checker->evaluate($dom, $page_url);
 ```
-# Report Structure
+## Report Structure
 
 In general, the reporting schematics will take the following structure:
 ```JavaScript
@@ -95,9 +104,9 @@ In general, the reporting schematics will take the following structure:
 }
 ```
 
-## Color Contrast Errors
+### Color Contrast Errors
 
-### Invalid Style Properties
+#### Invalid Style Properties
 
 | Key | Value |
 | --- | ----- |
@@ -108,7 +117,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Fix the invalid <insert-property>."` |
 
-### Bad Color Contrast
+#### Bad Color Contrast
 
 | Key | Value |
 | --- | ----- |
@@ -121,9 +130,9 @@ In general, the reporting schematics will take the following structure:
 | **contrast_ratio** | calculated contrast rounded to 2 decimal places (e.g. `1.23`) |
 | **recommendation** | `"Contrast Ratio for this element must be at least <insert-value>"` |
 
-## Heading Structure Errors
+### Heading Structure Errors
 
-### Heading Unallowed
+#### Heading Unallowed
 
 | Key | Value |
 | --- | ----- |
@@ -133,7 +142,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Check and use only allowed headings (<insert-list-of-allowed-headings>)."` |
 
-### Heading Inside Heading
+#### Heading Inside Heading
 
 | Key | Value |
 | --- | ----- |
@@ -143,7 +152,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Do not put heading inside another heading."` |
 
-### Heading Skipped
+#### Heading Skipped
 
 | Key | Value |
 | --- | ----- |
@@ -153,7 +162,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | If skipped h3, it would be `"<h3> is expected before the placement of this heading."` |
 
-### Heading Too Shallow
+#### Heading Too Shallow
 
 | Key | Value |
 | --- | ----- |
@@ -163,7 +172,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Try nesting this heading deeper."` |
 
-### Heading Too Deep
+#### Heading Too Deep
 
 | Key | Value |
 | --- | ----- |
@@ -173,7 +182,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Try nesting this heading shallower."` |
 
-### Heading Misplaced
+#### Heading Misplaced
 
 | Key | Value |
 | --- | ----- |
@@ -183,7 +192,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Try nesting this heading shallower."` |
 
-### Invalid Heading
+#### Invalid Heading
 
 | Key | Value |
 | --- | ----- |
@@ -193,9 +202,9 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Use valid headings only (<h1> through <h6>).` |
 
-## Image Accessibility Errors
+### Image Accessibility Errors
 
-### No Alt Text (Error)
+#### No Alt Text (Error)
 
 | Key | Value |
 | --- | ----- |
@@ -204,7 +213,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Add an alt attribute to the img and add a description."` |
 
-### Filename Alt Text (Error)
+#### Filename Alt Text (Error)
 
 | Key | Value |
 | --- | ----- |
@@ -214,7 +223,7 @@ In general, the reporting schematics will take the following structure:
 | **recommendation** | `"Do not use image filename as the alt attribute, describe the image."` |
 
 
-### Empty Alt Text (Warning)
+#### Empty Alt Text (Warning)
 
 | Key | Value |
 | --- | ----- |
@@ -223,9 +232,9 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"If this image is integral to the content, please add a description."` |
 
-## Link Accessibility Errors
+### Link Accessibility Errors
 
-### Redirect
+#### Redirect
 
 | Key | Value |
 | --- | ----- |
@@ -235,7 +244,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Use the final redirected link."` |
 
-### Dead
+#### Dead
 
 | Key | Value |
 | --- | ----- |
@@ -245,7 +254,7 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Find an alternative working link."` |
 
-### Domain Overlap
+#### Domain Overlap
 
 | Key | Value |
 | --- | ----- |
@@ -257,7 +266,7 @@ In general, the reporting schematics will take the following structure:
 
 Note: This is to make sure other pages in the same domain are linked via relative paths instead of absolute paths.
 
-### Slow Connection
+#### Slow Connection
 
 | Key | Value |
 | --- | ----- |
@@ -269,7 +278,7 @@ Note: This is to make sure other pages in the same domain are linked via relativ
 
 Note: The checker uses the HEAD request to fetch meta data for a page, this should not take long; thus, if the checker times out after 5 seconds, the checker will deem the link as slow.
 
-### Poor Link Text
+#### Poor Link Text
 
 | Key | Value |
 | --- | ----- |
@@ -305,7 +314,7 @@ Note: at least 2/3 of the words in the text are in the black list.
 * view
 * visit
 
-### Url Link Text
+#### Url Link Text
 
 | Key | Value |
 | --- | ----- |
@@ -315,7 +324,7 @@ Note: at least 2/3 of the words in the text are in the black list.
 | **html** | raw html of the tag |
 | **recommendation** | `"Use real words that describe the link."` |
 
-### Text Too Long
+#### Text Too Long
 
 | Key | Value |
 | --- | ----- |
@@ -327,7 +336,7 @@ Note: at least 2/3 of the words in the text are in the black list.
 
 Note: The current limit is 100 characters.
 
-### Unclear PDF Link
+#### Unclear PDF Link
 
 | Key | Value |
 | --- | ----- |
@@ -337,7 +346,7 @@ Note: The current limit is 100 characters.
 | **html** | raw html of the tag |
 | **recommendation** | `"Include the word "PDF" in the link"` |
 
-### Unclear Download Link
+#### Unclear Download Link
 
 | Key | Value |
 | --- | ----- |
@@ -347,7 +356,7 @@ Note: The current limit is 100 characters.
 | **html** | raw html of the tag |
 | **recommendation** | `"Include the word "download" in the link."` |
 
-# Development
+## Development
 
 * `$ composer install` to install all dependencies
 
@@ -355,7 +364,7 @@ Note: The current limit is 100 characters.
 
 * Run `$ composer style-fix-download` to download the latest php-cs-fixer file to project directory. Afterwards, you can run `$ composer style-fix` to auto style fix all your code.
 
-# Contributors
+## Contributors
 |[![](https://github.com/p1ho.png?size=50)](https://github.com/p1ho)|
 |:---:|
 |[p1ho](https://github.com/p1ho)|
