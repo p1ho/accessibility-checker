@@ -52,12 +52,12 @@ This package is not currently published to [Packagist](https://packagist.org/), 
 
 ### configurations
 
-| Checker Name | Parameters | Description |
+| Checker Name | Parameters | Parameters Description |
 | --- | --- | --- |
-| Color Contrast Checker | mode | "AA" or "AAA" |
-| Heading Structure Checker | heading_shift, strict_mode | Because CMS usually has a separate field for page title, the content part does not actually start at `<h1>`, `heading_shift` takes this into account (accepts a number from 0-6). If `strict_mode` is set to `false`, different headings like `<h1>` and `<h2>` can be nested at the same level, if set to `true`, `<h2>` would have to be nested deeper. |
-| Image Accessibility Checker | none | accepts no parameter |
-| Link Accessibility Checker | none | accepts no parameter |
+| Color Contrast Checker | (optional)`mode`, (optional)`bg`, (optional)`color` | **WCAG 2.0 Conformance**: "AA" or "AAA", defaults to "AA". **background-color**: any valid css value, defaults to "white". **color**: any valid css value, defaults to "black". |
+| Heading Structure Checker | (optional)`heading_shift`, (optional)`strict_mode` | **heading_shift**: because CMS usually has a separate field for page title, the content part does not actually start at `<h1>`, `heading_shift` takes this into account (accepts a number from 0-6). **strict_mode**: if `strict_mode` is set to `false`, different headings like `<h1>` and `<h2>` can be nested at the same level, if set to `true`, `<h2>` would have to be nested deeper. |
+| Image Accessibility Checker | none | none |
+| Link Accessibility Checker | (optional)`redirect_whitelist` | **redirect_whitelist**: some webpage will always redirect, those pages can be added into this whitelist so redirection checking is skipped. |
 
 example:
 ```PHP
@@ -71,8 +71,8 @@ use P1ho\AccessibilityChecker\ImageAccessibility;
 use P1ho\AccessibilityChecker\LinkAccessibility;
 
 // initialize accessibility checkers
-$color_contrast_checker     = new ColorContrast\Checker("AA"); // AA or AAA mode
-$heading_structure_checker  = new HeadingStructure\Checker(1, true); // heading shift(1-5) and strict mode
+$color_contrast_checker     = new ColorContrast\Checker();
+$heading_structure_checker  = new HeadingStructure\Checker();
 $img_accessibility_checker  = new ImageAccessibility\Checker();
 $link_accessibility_checker = new LinkAccessibility\Checker();
 

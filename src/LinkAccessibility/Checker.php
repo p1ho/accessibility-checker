@@ -21,11 +21,13 @@ class Checker extends Base
 
     /**
      * __construct function
+     * @param array $redirect_whitelist (There are links that are always going to redirect, like google maps)
      */
-    public function __construct()
+    public function __construct(array $redirect_whitelist = [])
     {
         require __DIR__ . "/../FontHelpers/block_elements.php";
         $this->block_elements = $block_elements;
+        $this->redirect_whitelist = $redirect_whitelist;
     }
 
     /**
@@ -74,7 +76,14 @@ class Checker extends Base
 
             // check link-quality
             $link_quality_eval = LinkQuality\Checker::evaluate($path, $page_url);
-            if ($link_quality_eval['is_redirect']) {
+            $skip_redirect = false;
+            foreach ($this->redirect_whitelist as $item) {
+                if (substr($path, 0, strlen($item)) === $item) {
+                    $skip_redirect = true;
+                    break;
+                }
+            }
+            if ($link_quality_eval['is_redirect'] && !$skip_redirect) {
                 $errors[] = (object) [
                     'type' => 'redirect',
                     'href' => $path,

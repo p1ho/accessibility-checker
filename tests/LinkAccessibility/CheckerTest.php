@@ -68,6 +68,51 @@ final class CheckerTest extends TestCase
         );
     }
 
+    public function testWhiteList(): void
+    {
+        $redirect_link = 'http://www.yahoo.com';
+        
+        // check that the redirect link really redirects
+        $checker = new Checker();
+        $href = $redirect_link;
+        $text = "Yahoo";
+        $html = "<a href=\"$href\">$text</a>";
+        $testcase = new \testcase($html, [
+          'passed' => false,
+          'errors' => [
+            (object) [
+              'type' => 'redirect',
+              'href' => $href,
+              'text' => $text,
+              'html' => $html,
+              'recommendation' => 'Use the final redirected link.'
+            ]
+          ]
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom, "https://www.google.com"),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+        
+        // check that whitelisted link won't be checked for redirection
+        $checker = new Checker([$redirect_link]);
+        $href = $redirect_link;
+        $text = "Yahoo";
+        $html = "<a href=\"$href\">$text</a>";
+        $testcase = new \testcase($html, [
+          'passed' => true,
+          'errors' => []
+        ]);
+        $dom = $this->getDOM($testcase->input);
+        $this->assertEquals(
+            $testcase->expected_output,
+            $checker->evaluate($dom, "https://www.google.com"),
+            print_r($testcase->input, true) . 'did not pass all checks.'
+        );
+    }
+
     private function getDOM($s)
     {
         $dom = new \DOMDocument();

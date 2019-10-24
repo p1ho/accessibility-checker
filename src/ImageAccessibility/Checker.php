@@ -86,7 +86,7 @@ class Checker
                 }
                 // modified regex from https://stackoverflow.com/questions/6768779/test-filename-with-regular-expression
                 if (preg_match("/^[\w,\s-\.]+\.[A-Za-z]{3,}$/", trim($alt))) {
-                  $this->errors[] = (object) [
+                    $this->errors[] = (object) [
                     'type' => 'filename alt',
                     'src'  => $src,
                     'html' => $html,
