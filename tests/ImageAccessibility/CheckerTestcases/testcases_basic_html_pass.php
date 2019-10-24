@@ -28,4 +28,14 @@ $testcases_basic_html_pass = array(
     ',
       array('passed'=>true,'errors'=>array(),'warnings'=>array())
   ),
+//------------------------------------------------------------------------------
+  new testcase(
+      '
+    <img src="/some/source.jpg" alt="this sentence has a period. and some words after it">
+    <img src="/some/source.jpg" alt="period. comma, period.">
+    <img src="/some/source.jpg" alt="some weird character !@#$%^&*()_">
+    <img src="/some/source.jpg" alt=".jpg">
+    ',
+      array('passed'=>true,'errors'=>array(),'warnings'=>array())
+  ),
 );

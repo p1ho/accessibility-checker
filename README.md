@@ -204,6 +204,16 @@ In general, the reporting schematics will take the following structure:
 | **html** | raw html of the tag |
 | **recommendation** | `"Add an alt attribute to the img and add a description."` |
 
+### Filename Alt Text (Error)
+
+| Key | Value |
+| --- | ----- |
+| **type** | `"filename alt"` |
+| **src** | values inside `src` attribute |
+| **html** | raw html of the tag |
+| **recommendation** | `"Do not use image filename as the alt attribute, describe the image."` |
+
+
 ### Empty Alt Text (Warning)
 
 | Key | Value |

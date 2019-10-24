@@ -84,6 +84,14 @@ class Checker
                       'html' => $html,
                       'recommendation' => 'If this image is integral to the content, please add a description.'];
                 }
+                // modified regex from https://stackoverflow.com/questions/6768779/test-filename-with-regular-expression
+                if (preg_match("/^[\w,\s-\.]+\.[A-Za-z]{3,}$/", trim($alt))) {
+                  $this->errors[] = (object) [
+                    'type' => 'filename alt',
+                    'src'  => $src,
+                    'html' => $html,
+                    'recommendation' => 'Do not use image filename as the alt attribute, describe the image.'];
+                }
             }
         }
     }

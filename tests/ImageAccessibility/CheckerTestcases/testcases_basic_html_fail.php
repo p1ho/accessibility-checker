@@ -71,4 +71,47 @@ $testcases_basic_html_fail = array(
         ],
       ))
   ),
+//------------------------------------------------------------------------------
+  // testing filenames as alt
+  new testcase(
+      '
+    <img src="/some/source1.jpg" alt="file.jpg">
+    <img src="/some/source2.jpg" alt="file.jpg.jpg">
+    <img src="/some/source3.jpg" alt="file.jpeg">
+    <img src="/some/source4.jpg" alt="f-i-l-e.jpgggggggggg">
+    <img src="/some/source5.jpg" alt="file.gif">
+    ',
+      array('passed'=>false,'errors'=>array(
+        (object) [
+          'type' => 'filename alt',
+          'src' => '/some/source1.jpg',
+          'html' => '<img src="/some/source1.jpg" alt="file.jpg">',
+          'recommendation' => 'Do not use image filename as the alt attribute, describe the image.',
+        ],
+        (object) [
+          'type' => 'filename alt',
+          'src' => '/some/source2.jpg',
+          'html' => '<img src="/some/source2.jpg" alt="file.jpg.jpg">',
+          'recommendation' => 'Do not use image filename as the alt attribute, describe the image.',
+        ],
+        (object) [
+          'type' => 'filename alt',
+          'src' => '/some/source3.jpg',
+          'html' => '<img src="/some/source3.jpg" alt="file.jpeg">',
+          'recommendation' => 'Do not use image filename as the alt attribute, describe the image.',
+        ],
+        (object) [
+          'type' => 'filename alt',
+          'src' => '/some/source4.jpg',
+          'html' => '<img src="/some/source4.jpg" alt="f-i-l-e.jpgggggggggg">',
+          'recommendation' => 'Do not use image filename as the alt attribute, describe the image.',
+        ],
+        (object) [
+          'type' => 'filename alt',
+          'src' => '/some/source5.jpg',
+          'html' => '<img src="/some/source5.jpg" alt="file.gif">',
+          'recommendation' => 'Do not use image filename as the alt attribute, describe the image.',
+        ],
+      ),'warnings'=>array())
+  ),
 );
