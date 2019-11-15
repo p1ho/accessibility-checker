@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Test cases (Fail) for Color Contrast Checker (Basic HTML)
+ * Test cases (Fail) for Color Contrast Checker (Basic HTML) w/ Fast Fail mode off
  *
  * These are just simple, relatively easy to read HTML test cases.
  *
@@ -11,7 +11,7 @@
  * expected['errors']['html'] has to be the same if it spans multiple lines.
  */
 
-$testcases_basic_html_fail = array(
+$testcases_basic_html_fail_no_fast_fail = array(
 //------------------------------------------------------------------------------
   // white text
   new testcase(

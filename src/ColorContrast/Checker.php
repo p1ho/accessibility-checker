@@ -90,6 +90,9 @@ class Checker
     // Block elements
     private $block_elements;
 
+    // Fast Fail Mode
+    private $fast_fail;
+
     // Temp holder for transparent colors
     private $parent_true_bg_color;
     private $parent_true_font_color;
@@ -99,8 +102,9 @@ class Checker
      * @param string $mode       [WCAG mode (AA or AAA), defaults to AA]
      * @param string $bg_color   [default background color for this Checker instance]
      * @param string $font_color [default font color for this Checker instance]
+     * @param bool   $fast_fail  [default true. if set to false, when an element throws error, its children will also be parsed]
      */
-    public function __construct(string $mode = "AA", string $bg_color = "white", string $font_color = "black")
+    public function __construct(string $mode = "AA", string $bg_color = "white", string $font_color = "black", bool $fast_fail = true)
     {
         require __DIR__ . "/../FontHelpers/default_font_sizes.php";
         require __DIR__ . "/../FontHelpers/block_elements.php";
@@ -112,6 +116,7 @@ class Checker
         $this->default_font_color     = $font_color;
         $this->default_font_sizes     = $default_font_sizes;
         $this->block_elements         = $block_elements;
+        $this->fast_fail              = $fast_fail;
     }
 
     /**
@@ -177,6 +182,8 @@ class Checker
         if (get_class($dom_el) === 'DOMComment') {
             return;
         }
+
+        $has_error = false;
 
         // set variables
         $tag_name = $dom_el->tagName;
@@ -284,6 +291,7 @@ class Checker
                       'html' => $html,
                       'recommendation' => 'Fix the invalid background-color.'
                     ];
+                    $has_error = true;
                 }
             }
 
@@ -299,6 +307,7 @@ class Checker
                       'html' => $html,
                       'recommendation' => 'Fix the invalid color.'
                     ];
+                    $has_error = true;
                 }
             }
 
@@ -314,6 +323,7 @@ class Checker
                       'html' => $html,
                       'recommendation' => 'Fix the invalid font-size.'
                     ];
+                    $has_error = true;
                 }
             }
 
@@ -329,6 +339,7 @@ class Checker
                       'html' => $html,
                       'recommendation' => 'Fix the invalid font-weight.'
                     ];
+                    $has_error = true;
                 }
             }
         } else {
@@ -370,6 +381,7 @@ class Checker
                       'contrast_ratio' => $contrast_ratio,
                       'recommendation' => 'Contrast Ratio for this element must be at least 3.0',
                     ];
+                    $has_error = true;
                 }
             } else {
                 if (!$evaluation['passed_wcag_2_aa']) {
@@ -383,6 +395,7 @@ class Checker
                       'contrast_ratio' => $contrast_ratio,
                       'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
                     ];
+                    $has_error = true;
                 }
             }
         } elseif ($mode == 'AAA') {
@@ -398,6 +411,7 @@ class Checker
                       'contrast_ratio' => $contrast_ratio,
                       'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
                     ];
+                    $has_error = true;
                 }
             } else {
                 if (!$evaluation['passed_wcag_2_aaa']) {
@@ -411,24 +425,29 @@ class Checker
                       'contrast_ratio' => $contrast_ratio,
                       'recommendation' => 'Contrast Ratio for this element must be at least 7.0',
                     ];
+                    $has_error = true;
                 }
             }
         }
 
         /*--------------------------------------------------------------------------
-        Go through child elements
+        Go through child elements if fast fail mode is false
          */
-        $child_elements = $this->_get_childElements($dom_el);
-        foreach ($child_elements as $child_element) {
-            $this->_eval_DOM(
-                $child_element,
-                $bg_color,
-                $font_color,
-                $font_size,
-                $font_is_bold,
-                $semantic_nesting_level,
-                $in_mark
-            );
+        if ($this->fast_fail && $has_error) {
+            return;
+        } else {
+            $child_elements = $this->_get_childElements($dom_el);
+            foreach ($child_elements as $child_element) {
+                $this->_eval_DOM(
+                  $child_element,
+                  $bg_color,
+                  $font_color,
+                  $font_size,
+                  $font_is_bold,
+                  $semantic_nesting_level,
+                  $in_mark
+              );
+            }
         }
     }
 

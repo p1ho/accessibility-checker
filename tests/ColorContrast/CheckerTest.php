@@ -12,7 +12,7 @@ final class CheckerTest extends TestCase
     public function testBasicHTMLPass(): void
     {
         require "CheckerTestcases/testcases_basic_html_pass.php";
-        $checker = new Checker();
+        $checker = new Checker("AA", "white", "black");
         foreach ($testcases_basic_html_pass as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals(
@@ -23,11 +23,25 @@ final class CheckerTest extends TestCase
         }
     }
 
-    public function testBasicHTMLFail(): void
+    public function testBasicHTMLFailFastFail(): void
     {
-        require "CheckerTestcases/testcases_basic_html_fail.php";
-        $checker = new Checker();
-        foreach ($testcases_basic_html_fail as $testcase) {
+        require "CheckerTestcases/testcases_basic_html_fail_fast_fail.php";
+        $checker = new Checker("AA", "white", "black", true);
+        foreach ($testcases_basic_html_fail_fast_fail as $testcase) {
+            $dom = $this->getDOM($testcase->input);
+            $this->assertEquals(
+                $testcase->expected_output,
+                $checker->evaluate($dom),
+                trim($testcase->input)
+          );
+        }
+    }
+
+    public function testBasicHTMLFailNoFastFail(): void
+    {
+        require "CheckerTestcases/testcases_basic_html_fail_no_fast_fail.php";
+        $checker = new Checker("AA", "white", "black", false);
+        foreach ($testcases_basic_html_fail_no_fast_fail as $testcase) {
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals(
                 $testcase->expected_output,
