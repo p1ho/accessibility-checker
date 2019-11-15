@@ -501,7 +501,7 @@ class Checker
         }
         return str_replace(["\r", "\n", "\t"], '', $text);
     }
-    
+
     /**
      * _get_outerHTML helper.
      * Consulted https://stackoverflow.com/questions/5404941/how-to-return-outer-html-of-domdocument
@@ -557,11 +557,19 @@ class Checker
         ];
 
         // parse background (note: this must be done before parsing font)
+
+        // if both 'background' and 'background-color' are defined, we only take
+        // the latter one.
+        $properties = ['background', 'background-color'];
         $property = 'background-color';
+        foreach ($styles_raw as $style => $value) {
+            if (in_array($style, $properties)) {
+                $property = $style;
+            }
+        }
         $parent_true = $this->parent_true_bg_color;
         if (isset($styles_raw[$property])) {
             $value = $styles_raw[$property];
-
             if ($this->_is_color_function($value)) {
                 $child_color_array = $this->_color_function_to_array($value);
                 $this->parent_true_bg_color = $child_color_array;
@@ -572,25 +580,25 @@ class Checker
                     if (isset($child_color_array['r']) &&
                         isset($child_color_array['g']) &&
                         isset($child_color_array['b'])) {
-                        $styles[$property] = rgba2rgb($child_color_array, $parent_bg_color);
+                        $styles['background-color'] = rgba2rgb($child_color_array, $parent_bg_color);
                     }
                     // hsla
                     if (isset($child_color_array['h']) &&
                         isset($child_color_array['s']) &&
                         isset($child_color_array['l'])) {
-                        $styles[$property] = hsla2rgb($child_color_array, $parent_bg_color);
+                        $styles['background-color'] = hsla2rgb($child_color_array, $parent_bg_color);
                     }
                 } else {
-                    $styles[$property] = $child_color_array;
+                    $styles['background-color'] = $child_color_array;
                 }
             } elseif ($this->_is_hex($value) || $this->_is_color_name($value)) {
-                $styles[$property] = $value;
+                $styles['background-color'] = $value;
                 $this->parent_true_bg_color = $value;
             } elseif ($value === "transparent" || $value === "initial") {
 
                 // can set these to rendered parent bg color because connection to the
                 // potential transparency is lost.
-                $styles[$property] = $parent_bg_color;
+                $styles['background-color'] = $parent_bg_color;
                 $this->parent_true_bg_color = $parent_bg_color;
             } elseif ($value === "inherit") {
 
@@ -601,19 +609,23 @@ class Checker
                     if (isset($parent_true['r']) &&
                         isset($parent_true['g']) &&
                         isset($parent_true['b'])) {
-                        $styles[$property] = rgba2rgb($parent_true, $parent_bg_color);
+                        $styles['background-color'] = rgba2rgb($parent_true, $parent_bg_color);
                     }
                     // hsla
                     if (isset($parent_true['h']) &&
                         isset($parent_true['s']) &&
                         isset($parent_true['l'])) {
-                        $styles[$property] = hsla2rgb($parent_true, $parent_bg_color);
+                        $styles['background-color'] = hsla2rgb($parent_true, $parent_bg_color);
                     }
                 } else {
-                    $styles[$property] = $parent_bg_color;
+                    $styles['background-color'] = $parent_bg_color;
                 }
             } else {
-                $styles[$property] = "invalid";
+                if ($property === 'background-color') {
+                    $styles['background-color'] = "invalid";
+                }
+                // 'background' could take in other special values (like picture),
+                // so even if it's a false negative, it shouldn't show as invalid
             }
         }
 

@@ -344,7 +344,7 @@ $testcases_basic_html_fail = array(
     ))
   ),
 //------------------------------------------------------------------------------
-  // testing backgroudn-color: initial;
+  // testing background-color: initial;
   new testcase(
       '
         <div style="background-color: rgba(75, 0, 0, .5)">
@@ -814,6 +814,44 @@ $testcases_basic_html_fail = array(
         'text' => 'invalid font-weight 3',
         'html' => '<p style="font-weight: -1">invalid font-weight 3</p>',
         'recommendation' => 'Fix the invalid font-weight.',
+      ],
+    ))
+  ),
+//------------------------------------------------------------------------------
+  // both background and background-color are defined, only the latter matters (background first)
+  new testcase(
+      '
+        <p style="background: white; background-color: #ccc; color: #ccc;">gray on gray</p>
+    ',
+      array('passed'=>false,'errors'=>array(
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'gray on gray',
+        'html' => '<p style="background: white; background-color: #ccc; color: #ccc;">gray on gray</p>',
+        'text_is_large' => false,
+        'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
+      ],
+    ))
+  ),
+//------------------------------------------------------------------------------
+  // both background and background-color are defined, only the latter matters (background-color first)
+  new testcase(
+      '
+        <p style="background-color: white; background: black;">black on black</p>
+    ',
+      array('passed'=>false,'errors'=>array(
+      (object) [
+        'type' => 'low contrast',
+        'mode' => 'AA',
+        'tag' => 'p',
+        'text' => 'black on black',
+        'html' => '<p style="background-color: white; background: black;">black on black</p>',
+        'text_is_large' => false,
+        'contrast_ratio' => '1.00',
+        'recommendation' => 'Contrast Ratio for this element must be at least 4.5',
       ],
     ))
   ),

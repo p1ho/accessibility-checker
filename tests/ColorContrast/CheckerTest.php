@@ -17,7 +17,8 @@ final class CheckerTest extends TestCase
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals(
                 $testcase->expected_output,
-                $checker->evaluate($dom)
+                $checker->evaluate($dom),
+                trim($testcase->input)
           );
         }
     }
@@ -30,7 +31,8 @@ final class CheckerTest extends TestCase
             $dom = $this->getDOM($testcase->input);
             $this->assertEquals(
                 $testcase->expected_output,
-                $checker->evaluate($dom)
+                $checker->evaluate($dom),
+                trim($testcase->input)
           );
         }
     }
