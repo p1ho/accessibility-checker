@@ -83,14 +83,6 @@ class Checker extends Base
                     break;
                 }
             }
-            if ($link_quality_eval['is_redirect'] && !$skip_redirect) {
-                $errors[] = (object) [
-                    'type' => 'redirect',
-                    'href' => $path,
-                    'text' => $text,
-                    'html' => $html,
-                    'recommendation' => 'Use the final redirected link.'];
-            }
             if ($link_quality_eval['is_dead']) {
                 $errors[] = (object) [
                     'type' => 'dead',
@@ -98,22 +90,33 @@ class Checker extends Base
                     'text' => $text,
                     'html' => $html,
                     'recommendation' => 'Find an alternative working link.'];
-            }
-            if ($link_quality_eval['is_same_domain']) {
-                $errors[] = (object) [
-                    'type' => 'domain overlap',
-                    'href' => $path,
-                    'text' => $text,
-                    'html' => $html,
-                    'recommendation' => 'Use relative URL.'];
-            }
-            if ($link_quality_eval['timed_out']) {
-                $errors[] = (object) [
-                    'type' => 'slow connection',
-                    'href' => $path,
-                    'text' => $text,
-                    'html' => $html,
-                    'recommendation' => 'Troubleshoot why the page takes so long to load.'];
+            } else {
+                if ($link_quality_eval['timed_out']) {
+                    $errors[] = (object) [
+                      'type' => 'slow connection',
+                      'href' => $path,
+                      'text' => $text,
+                      'html' => $html,
+                      'recommendation' => 'Troubleshoot why the page takes so long to load.'];
+                } else {
+                    if ($link_quality_eval['is_same_domain']) {
+                        $errors[] = (object) [
+                        'type' => 'domain overlap',
+                        'href' => $path,
+                        'text' => $text,
+                        'html' => $html,
+                        'recommendation' => 'Use relative URL.'];
+                    } else {
+                        if ($link_quality_eval['is_redirect'] && !$skip_redirect) {
+                            $errors[] = (object) [
+                          'type' => 'redirect',
+                          'href' => $path,
+                          'text' => $text,
+                          'html' => $html,
+                          'recommendation' => 'Use the final redirected link.'];
+                        }
+                    }
+                }
             }
 
             // check link-text accessibility
@@ -125,41 +128,43 @@ class Checker extends Base
                     'text' => $text,
                     'html' => $html,
                     'recommendation' => 'Use more descriptive and specific wording.'];
-            }
-            if (!$link_text_eval['passed_text_not_url']) {
-                $errors[] = (object) [
-                    'type' => 'url link text',
-                    'href' => $path,
-                    'text' => $text,
-                    'html' => $html,
-                    'recommendation' => 'Use real words that describe the link.'];
-            }
-            if (!$link_text_eval['passed_text_length']) {
-                $errors[] = (object) [
-                    'type' => 'bad text length',
-                    'href' => $path,
-                    'text' => $text,
-                    'html' => $html,
-                    'recommendation' => 'Ideal link text should be between 1 to 100 characters.'];
-            }
-            if ($link_text_eval['url_is_pdf']) {
-                if (!$link_text_eval['text_has_pdf']) {
-                    $errors[] = (object) [
-                        'type' => 'unclear pdf link',
-                        'href' => $path,
-                        'text' => $text,
-                        'html' => $html,
-                        'recommendation' => 'Include the word "PDF" in the link.'];
-                }
             } else {
-                if ($link_text_eval['url_is_download'] &&
-                    $link_text_eval['text_has_download']) {
+                if (!$link_text_eval['passed_text_not_url']) {
                     $errors[] = (object) [
-                        'type' => 'unclear download link',
+                      'type' => 'url link text',
+                      'href' => $path,
+                      'text' => $text,
+                      'html' => $html,
+                      'recommendation' => 'Use real words that describe the link.'];
+                } else {
+                    if (!$link_text_eval['passed_text_length']) {
+                        $errors[] = (object) [
+                        'type' => 'bad text length',
                         'href' => $path,
                         'text' => $text,
                         'html' => $html,
-                        'recommendation' => 'Include the word "download" in the link.'];
+                        'recommendation' => 'Ideal link text should be between 1 to 100 characters.'];
+                    }
+                }
+                if ($link_text_eval['url_is_pdf']) {
+                    if (!$link_text_eval['text_has_pdf']) {
+                        $errors[] = (object) [
+                          'type' => 'unclear pdf link',
+                          'href' => $path,
+                          'text' => $text,
+                          'html' => $html,
+                          'recommendation' => 'Include the word "PDF" in the link.'];
+                    }
+                } else {
+                    if ($link_text_eval['url_is_download'] &&
+                      $link_text_eval['text_has_download']) {
+                        $errors[] = (object) [
+                          'type' => 'unclear download link',
+                          'href' => $path,
+                          'text' => $text,
+                          'html' => $html,
+                          'recommendation' => 'Include the word "download" in the link.'];
+                    }
                 }
             }
         }
