@@ -101,5 +101,14 @@ $testcases_basic_html_pass = array(
       array('passed'=>true,'errors'=>array())
   ),
 //------------------------------------------------------------------------------
-
+    // !important keyword should still be acceptable
+    new testcase(
+        '
+      <p style="background-color: white !important;">should pass</p>
+      <p style="background-color: rgb(255, 255, 255) !important;">should pass</p>
+      <p style="background-color: rgba(255, 255, 255, .8) !important;">should pass</p>
+      <p style="background-color: #fff !important;">large text should pass</p>
+      ',
+        array('passed'=>true,'errors'=>array())
+    ),
 );
