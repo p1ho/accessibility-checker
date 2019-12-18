@@ -658,7 +658,9 @@ class Checker
 
         if (isset($styles_raw[$property])) {
             $value = $styles_raw[$property];
-
+            if (strpos($value, '!important') !== false) {
+                $value = trim(str_replace('!important', '', $value));
+            }
             if ($this->_is_color_function($value)) {
                 $child_color_array = $this->_color_function_to_array($value);
                 $this->parent_true_font_color = $child_color_array;
