@@ -33,20 +33,11 @@ Currently, this is being developed with the goal to analyze body texts from *Dru
 
 # Installation
 
-This package is not currently published to [Packagist](https://packagist.org/), but can be included through composer by including the following lines in your `composer.json`
+This package is available through [Composer](https://getcomposer.org/), and can be installed by entering:
 
-```JavaScript
-    "require": {
-        "p1ho/accessibility-checker": "@dev",
-    }
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "link-to-this-repository"
-        }
-    ],
+```Bash
+$ composer require p1ho/accessibility-checker
 ```
-(Note: if you have other items in `"require"` and `"respositories"` already, just add them to the existing list)
 
 ## Usage
 
