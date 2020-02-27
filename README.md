@@ -356,6 +356,6 @@ Note: The current limit is 100 characters.
 * Run `$ composer style-fix-download` to download the latest php-cs-fixer file to project directory. Afterwards, you can run `$ composer style-fix` to auto style fix all your code.
 
 ## Contributors
-|[![](https://github.com/p1ho.png?size=50)](https://github.com/p1ho)|
-|:---:|
-|[p1ho](https://github.com/p1ho)|
+|[![](https://github.com/p1ho.png?size=50)](https://github.com/p1ho)|[![](https://github.com/oburk.png?size=50)](https://github.com/oburk)|
+|:---:|:---:|
+|[p1ho](https://github.com/p1ho)|[oburk](https://github.com/oburk)|
