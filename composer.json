@@ -36,8 +36,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "P1ho\\AccessibilityChecker\\": "/src",
-            "P1ho\\AccessibilityChecker\\Tests\\": "/tests"
+            "P1ho\\AccessibilityChecker\\": "/src"
         },
         "classmap": [
             "src/ColorContrast/Checker.php",
@@ -47,7 +46,14 @@
             "src/LinkAccessibility/Base.php",
             "src/LinkAccessibility/Checker.php",
             "src/LinkAccessibility/LinkQuality/Checker.php",
-            "src/LinkAccessibility/LinkText/Checker.php",
+            "src/LinkAccessibility/LinkText/Checker.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "P1ho\\AccessibilityChecker\\Tests\\": "/tests"
+        },
+        "classmap": [
             "tests/ColorContrast/CheckerTest.php",
             "tests/ColorContrast/CalculatorTest.php",
             "tests/HeadingStructure/CheckerTest.php",
