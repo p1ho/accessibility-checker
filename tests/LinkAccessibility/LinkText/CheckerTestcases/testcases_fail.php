@@ -418,7 +418,7 @@ $testcases_fail = array(
   // download link w/o 'download'
   new testcase(
       '
-    <a href="https://nodejs.org/dist/v10.15.0/node-v10.15.0-x64.msi">Nodejs</a>
+    <a href="https://getcomposer.org/Composer-Setup.exe">Composer</a>
     ',
       array(
       'passed_blacklist_words'    => true,

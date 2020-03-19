@@ -33,7 +33,7 @@ $testcases_pass = array(
   // download
   new testcase(
       '
-    <a href="https://nodejs.org/dist/v10.15.0/node-v10.15.0-x64.msi">Download Nodejs</a>
+    <a href="https://getcomposer.org/Composer-Setup.exe">Download Composer</a>
     ',
       array(
       'passed_blacklist_words'    => true,
@@ -49,7 +49,7 @@ $testcases_pass = array(
   // download 2
   new testcase(
       '
-    <a href="https://nodejs.org/dist/v10.15.0/node-v10.15.0-x64.msi">Nodejs Download</a>
+    <a href="https://getcomposer.org/Composer-Setup.exe">Composer Download</a>
     ',
       array(
       'passed_blacklist_words'    => true,
@@ -65,7 +65,7 @@ $testcases_pass = array(
   // download 3
   new testcase(
       '
-    <a href="https://nodejs.org/dist/v10.15.0/node-v10.15.0-x64.msi">Nodejs (download)</a>
+    <a href="https://getcomposer.org/Composer-Setup.exe">Composer (download)</a>
     ',
       array(
       'passed_blacklist_words'    => true,
