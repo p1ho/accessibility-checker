@@ -19,7 +19,7 @@ final class CheckerTest extends TestCase
                 $testcase->expected_output,
                 $checker->evaluate($dom),
                 trim($testcase->input)
-          );
+            );
         }
     }
 
@@ -33,7 +33,7 @@ final class CheckerTest extends TestCase
                 $testcase->expected_output,
                 $checker->evaluate($dom),
                 trim($testcase->input)
-          );
+            );
         }
     }
 
@@ -47,7 +47,7 @@ final class CheckerTest extends TestCase
                 $testcase->expected_output,
                 $checker->evaluate($dom),
                 trim($testcase->input)
-          );
+            );
         }
     }
 

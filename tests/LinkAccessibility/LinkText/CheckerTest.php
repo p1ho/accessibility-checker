@@ -50,27 +50,27 @@ final class CheckerTest extends TestCase
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com')
-       );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/')
-       );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something')
-       );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something')
-       );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something/else')
-       );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something/else/')
-       );
+        );
     }
 
     public function testComputeLinkUrl(): void

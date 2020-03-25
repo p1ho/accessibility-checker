@@ -72,27 +72,27 @@ final class CheckerTest extends TestCase
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com')
-      );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/')
-      );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something')
-      );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something')
-      );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something/else')
-      );
+        );
         $this->assertEquals(
             'https://www.google.com',
             Checker::get_site_url('https://www.google.com/something/else/')
-      );
+        );
     }
 
     public function testComputeLinkUrl(): void
@@ -101,31 +101,31 @@ final class CheckerTest extends TestCase
             '//example.com',
             '/some/page/',
             'https://www.google.com'
-       ));
+        ));
         $this->assertEquals('https://www.google.com/this/is/a/path', Checker::compute_link_url(
             '/this/is/a/path',
             '/some/page/',
             'https://www.google.com'
-       ));
+        ));
         $this->assertEquals('http://example.com', Checker::compute_link_url(
             'http://example.com',
             '/some/page/',
             'https://www.google.com'
-       ));
+        ));
         $this->assertEquals('https://example.com', Checker::compute_link_url(
             'https://example.com',
             '/some/page/',
             'https://www.google.com'
-       ));
+        ));
         $this->assertEquals('https://www.google.com/some/page/./this/is/a/path', Checker::compute_link_url(
             './this/is/a/path',
             '/some/page/',
             'https://www.google.com'
-       ));
+        ));
         $this->assertEquals('https://www.google.com/some/page/../this/is/a/path', Checker::compute_link_url(
             '../this/is/a/path',
             '/some/page/',
             'https://www.google.com'
-       ));
+        ));
     }
 }

@@ -446,7 +446,7 @@ class Checker
                     $font_is_bold,
                     $semantic_nesting_level,
                     $in_mark
-              );
+                );
             }
         }
     }
