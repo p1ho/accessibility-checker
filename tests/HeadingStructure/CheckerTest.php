@@ -229,99 +229,19 @@ final class CheckerTest extends TestCase
 
     public function testingMultipleH1(): void
     {
-        // by default multiple h1 should fail
-        $checker = new Checker(0, true);
-        $html = "
-          <h1>First h1</h1>
-          <h1>Second h1</h1>
-        ";
-        $testcase = new \testcase($html, [
-          'passed' => false,
-          'errors' => [
-            (object) [
-              'type' => 'heading unallowed',
-              'tag' => 'h1',
-              'text' => 'Second h1',
-              'html' => '<h1>Second h1</h1>',
-              'recommendation' => "Check and use only allowed headings (<h2>, <h3>, <h4>, <h5>, <h6>; multiple <h1> unallowed)."
-            ]
-          ]
-        ]);
-        $dom = $this->getDOM($testcase->input);
-        $this->assertEquals(
-            $testcase->expected_output,
-            $checker->evaluate($dom),
-            print_r($testcase->input, true) . 'did not pass all checks.'
-        );
+        require "CheckerTestcases/testcases_multiple_h1.php";
 
-        // unallowed heading takes precedence than nesting problem
-        $checker = new Checker(0, true);
-        $html = "
-          <div><h1>First h1</h1></div>
-          <h1>Second h1</h1>
-        ";
-        $testcase = new \testcase($html, [
-          'passed' => false,
-          'errors' => [
-            (object) [
-              'type' => 'heading unallowed',
-              'tag' => 'h1',
-              'text' => 'Second h1',
-              'html' => '<h1>Second h1</h1>',
-              'recommendation' => "Check and use only allowed headings (<h2>, <h3>, <h4>, <h5>, <h6>; multiple <h1> unallowed)."
-            ]
-          ]
-        ]);
-        $dom = $this->getDOM($testcase->input);
-        $this->assertEquals(
-            $testcase->expected_output,
-            $checker->evaluate($dom),
-            print_r($testcase->input, true) . 'did not pass all checks.'
-        );
+        $checker = new Checker(0, false, false);
+        foreach ($testcases_multiple_h1_fail as $testcase) {
+            $dom = $this->getDOM($testcase->input);
+            $this->assertEquals($testcase->expected_output, $checker->evaluate($dom), "failed: ".$testcase->input);
+        }
 
-        // throw some other headings into the mix
-        $checker = new Checker(0, false);
-        $html = "
-          <h1>First h1</h1>
-          <h2>Some h2</h2>
-          <h3>Some h3</h3>
-          <h1>Second h1</h1>
-        ";
-        $testcase = new \testcase($html, [
-          'passed' => false,
-          'errors' => [
-            (object) [
-              'type' => 'heading unallowed',
-              'tag' => 'h1',
-              'text' => 'Second h1',
-              'html' => '<h1>Second h1</h1>',
-              'recommendation' => "Check and use only allowed headings (<h2>, <h3>, <h4>, <h5>, <h6>; multiple <h1> unallowed)."
-            ]
-          ]
-        ]);
-        $dom = $this->getDOM($testcase->input);
-        $this->assertEquals(
-            $testcase->expected_output,
-            $checker->evaluate($dom),
-            print_r($testcase->input, true) . 'did not pass all checks.'
-        );
-
-        // if allow_multiple_h1 is set to true, multiple h1 should pass
-        $checker = new Checker(0, true, true);
-        $html = "
-          <h1>First h1</h1>
-          <h1>Second h1</h1>
-        ";
-        $testcase = new \testcase($html, [
-          'passed' => true,
-          'errors' => []
-        ]);
-        $dom = $this->getDOM($testcase->input);
-        $this->assertEquals(
-            $testcase->expected_output,
-            $checker->evaluate($dom),
-            print_r($testcase->input, true) . 'did not pass all checks.'
-        );
+        $checker = new Checker(0, false, true);
+        foreach ($testcases_multiple_h1_pass as $testcase) {
+            $dom = $this->getDOM($testcase->input);
+            $this->assertEquals($testcase->expected_output, $checker->evaluate($dom));
+        }
     }
 
     private function getDOM($s)

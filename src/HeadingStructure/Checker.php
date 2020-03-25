@@ -82,7 +82,6 @@ class Checker
         }
         $this->is_strict = $is_strict;
         $this->allow_multiple_h1 = $allow_multiple_h1;
-        $this->h1_count = 0;
     }
 
     /**
@@ -105,6 +104,7 @@ class Checker
         $this->errors = [];
         $this->heading_level_structure = [$this->heading_shift => 0];
         $this->heading_order = array_slice([1,2,3,4,5,6], 0, $this->heading_shift);
+        $this->h1_count = 0;
 
         if (count($dom->getElementsByTagName('body')) > 0) {
             $body = $dom->getElementsByTagName('body')[0];
