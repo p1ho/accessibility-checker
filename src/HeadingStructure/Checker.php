@@ -49,6 +49,12 @@ class Checker
     // strict mode
     private $is_strict;
 
+    // allow multiple h1
+    private $allow_multiple_h1;
+
+    // h1 count
+    private $h1_count;
+
     // Block elements
     private $block_elements;
 
@@ -59,8 +65,11 @@ class Checker
      * heading level by 1, meaning the first heading we expect is h2]
      * @param bool $is_strict
      * [whether we allow different headings to exist at the same nesting level]
+     * @param bool $allow_multiple_h1
+     * [MDN recommends having only 1 <h1> per page, but because multiple h1 is so common,
+     * I'm making it optional (but still defaults to false)]
      */
-    public function __construct(int $heading_shift = 1, bool $is_strict = false)
+    public function __construct(int $heading_shift = 1, bool $is_strict = false, bool $allow_multiple_h1 = false)
     {
         require __DIR__ . "/../FontHelpers/block_elements.php";
         $this->block_elements = $block_elements;
@@ -72,6 +81,8 @@ class Checker
             $this->heading_shift = $heading_shift;
         }
         $this->is_strict = $is_strict;
+        $this->allow_multiple_h1 = $allow_multiple_h1;
+        $this->h1_count = 0;
     }
 
     /**
@@ -136,7 +147,14 @@ class Checker
         // if element is heading
         if ($this->_is_heading_tag($tag_name)) {
             $heading_rank = (int) $tag_name[1];
-            $allowed_headings = array_slice([1,2,3,4,5,6], $this->heading_shift);
+            if ($heading_rank === 1) {
+                $this->h1_count++;
+            }
+            if (!$this->allow_multiple_h1 && $this->h1_count > 1) {
+                $allowed_headings = array_slice([2,3,4,5,6], $this->heading_shift);
+            } else {
+                $allowed_headings = array_slice([1,2,3,4,5,6], $this->heading_shift);
+            }
             if (!in_array($heading_rank, $allowed_headings)) {
                 if (count($allowed_headings) > 0) {
                     $allowed_headings_text = implode(', ', array_map(function ($x) {
@@ -144,6 +162,9 @@ class Checker
                     }, $allowed_headings));
                 } else {
                     $allowed_headings_text = "no headings are allowed";
+                }
+                if ($heading_rank === 1 && $this->h1_count > 1) {
+                    $allowed_headings_text .= "; multiple <h1> unallowed";
                 }
                 $this->errors[] = (object) [
                   'type' => 'heading unallowed',
